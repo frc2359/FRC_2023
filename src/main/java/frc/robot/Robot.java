@@ -15,10 +15,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  /* MEMBERS */
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  /* ROBOT */
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,6 +45,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {}
+
+  /* AUTONOMOUS */
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -72,6 +79,8 @@ public class Robot extends TimedRobot {
     }
   }
 
+  /* TELEOP */
+
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {}
@@ -79,6 +88,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
+
+  /* DISABLED */
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -88,6 +99,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {}
 
+  /* TEST */
+
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {}
@@ -95,6 +108,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  /* SIMULATION */
 
   /** This function is called once when the robot is first started up. */
   @Override
