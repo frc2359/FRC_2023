@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     //DriveInit
+    fauxBot.init();
 
     //LimelightInit
     Limelight.initNetworkTables();
