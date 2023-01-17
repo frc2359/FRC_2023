@@ -24,7 +24,7 @@ public class SimpleDrive {
     public final Encoder encoder0 = new Encoder(0, 1);
 
     private DifferentialDrive diffDrive = new DifferentialDrive(drive1, drive2);
-    private DifferentialDrive diffDrive1 = new DifferentialDrive(drive3, drive4);
+    // private DifferentialDrive diffDrive1 = new DifferentialDrive(drive3, drive4);
 
     //PID UNKNOWNS
     private double error = 0;
@@ -33,6 +33,7 @@ public class SimpleDrive {
 
     //PID KNOWNS (HARDCODE AFTER TRIAL AND ERROR)
     //THESE VALUES WILL CHANGE IF THE DIMENSIONS OF THE ROBOT CHANGE
+    //THESE ARE DEFAULTS - CHANGE
     private double kP = 0.0001;
     private double kI = 0.0001;
     private double kD = 0.0001;
@@ -40,7 +41,7 @@ public class SimpleDrive {
     //TIMER
     private double lastTimestamp = 0;
 
-    //initialize safety for wheels
+    //initialize safety and follow for wheels
     public void init() {
         drive1.setSafetyEnabled(true);
         drive2.setSafetyEnabled(true);
@@ -61,14 +62,18 @@ public class SimpleDrive {
         drive4.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
     }
 
-    //set PID values for testing
+    /** set PID values for testing 
+     * @param p is the proportional value
+     * @param i is the integral value
+     * @param d is the derivative value
+    */
     public void setPIDValues(double p, double i, double d) {
         kP = p;
         kI = i;
         kD = d;
     }
 
-    //sets all motor outputs to same value
+    /**  sets all motor outputs to same value */
     public void setMotors(double val) {
         drive1.set(val);
         drive2.set(val);
@@ -76,6 +81,7 @@ public class SimpleDrive {
         drive4.set(val);
     }
     
+    /*
     //x is the same unit as the wheel radius defined above (to be defined in robotMap later)
     public void travel(int x) {
 
@@ -94,7 +100,7 @@ public class SimpleDrive {
 
     }
 
-    /*
+    
     private void calcError(double distance, double traveled) {
         error = distance - traveled; 
     }
@@ -112,27 +118,21 @@ public class SimpleDrive {
     }
     */
 
+    private void feed() {
+        drive1.feed();
+        drive2.feed();
+        drive3.feed();
+        drive4.feed();
+    }
+
+    /**Simple arcade drive mechanism */
     public void drive() {
+        feed();
         if ((IO.getDriveY()) > 1 || (IO.getDriveY()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
-            // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
-            if(IO.getDriveY() < 0){
-
-                diffDrive.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
-                diffDrive1.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
-               // IO.putNumberToSmartDashboard(("Vel. R"), frontRight.getSelectedSensorVelocity());
-               // IO.putNumberToSmartDashboard(("Vel. L"), frontLeft.getSelectedSensorVelocity());
-                
-                // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
-
-            } else {
-                diffDrive.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT, true);
-                diffDrive1.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT, true);
-            }
-           // IO.putNumberToSmartDashboard(("R Enc"),  frontLeft.getSelectedSensorPosition());
-           // IO.putNumberToSmartDashboard(("L Enc"),  frontRight.getSelectedSensorPosition());
-         //   IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
+            diffDrive.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
+            // diffDrive1.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
         }
     }
 }
