@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //subsystems
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SimpleDrive;
 
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private static final Gripper grippers = new Gripper();
 
   
   @Override
@@ -36,7 +38,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     //DriveInit
-    fauxBot.init();
 
     //LimelightInit
     Limelight.initNetworkTables();
@@ -58,23 +59,44 @@ public class Robot extends TimedRobot {
    * uncomment the getString line to get the auto name from the text box below the Gyro
    */
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+    // fauxbot.errorsum = 0;
+    // fauxbot.lastTimestamp = Timer.getFPGATimestamp();
+  }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+        // fauxBot.travel(10);
+    }
 
   /* TELEOP */
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     fauxBot.drive();
+    grippers.gripEm();
   }
+
+  /* DISABLED */
+
+  /** This function is called once when the robot is disabled. */
+  @Override
+  public void disabledInit() {}
+
+  /** This function is called periodically when disabled. */
+  @Override
+  public void disabledPeriodic() {}
 
   /* TEST */
 
@@ -85,4 +107,14 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  /* SIMULATION */
+
+  /** This function is called once when the robot is first started up. */
+  @Override
+  public void simulationInit() {}
+
+  /** This function is called periodically whilst in simulation. */
+  @Override
+  public void simulationPeriodic() {}
 }
