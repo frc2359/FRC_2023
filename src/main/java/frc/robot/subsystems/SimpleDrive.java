@@ -8,23 +8,24 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.math.controller.PIDController;
 
 import frc.robot.IO;
 import frc.robot.IO.*;
 import static frc.robot.RobotMap.*;
 
 public class SimpleDrive {
-    public final WPI_VictorSPX drive1 = new WPI_VictorSPX(1);
-    public final WPI_VictorSPX drive2 = new WPI_VictorSPX(2);
-    public final WPI_VictorSPX drive3 = new WPI_VictorSPX(3);
-    public final WPI_VictorSPX drive4 = new WPI_VictorSPX(4);
+    public final WPI_VictorSPX drive1 = new WPI_VictorSPX(DRIVE_1);
+    public final WPI_VictorSPX drive2 = new WPI_VictorSPX(DRIVE_2);
+    public final WPI_VictorSPX drive3 = new WPI_VictorSPX(DRIVE_3);
+    public final WPI_VictorSPX drive4 = new WPI_VictorSPX(DRIVE_4);
     public final Joystick joy = new Joystick(0);
 
     //encoder
     public final Encoder encoder0 = new Encoder(0, 1);
 
     private DifferentialDrive diffDrive = new DifferentialDrive(drive1, drive2);
-    // private DifferentialDrive diffDrive1 = new DifferentialDrive(drive3, drive4);
+
 
     //PID UNKNOWNS
     private double error = 0;
@@ -38,6 +39,10 @@ public class SimpleDrive {
     private double kI = 0.0001;
     private double kD = 0.0001;
 
+    private PIDController pid;
+
+    private Encoder enc = new Encoder(0, 1);
+
     //TIMER
     private double lastTimestamp = 0;
 
@@ -49,9 +54,7 @@ public class SimpleDrive {
         drive4.setSafetyEnabled(true);
 
         drive1.setInverted(true);
-        // drive3.setInverted(true);
         drive4.setInverted(true);
-        // drive2.setInverted(true);
 
         drive3.follow(drive2);
         drive4.follow(drive1);
@@ -60,6 +63,9 @@ public class SimpleDrive {
         drive2.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         drive3.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         drive4.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+
+
+        pid = new PIDController(kP, kI, kD);
     }
 
     /** set PID values for testing 
@@ -71,6 +77,7 @@ public class SimpleDrive {
         kP = p;
         kI = i;
         kD = d;
+        pid = new PIDController(kP, kI, kD);
     }
 
     /**  sets all motor outputs to same value */
@@ -81,6 +88,10 @@ public class SimpleDrive {
         drive4.set(val);
     }
     
+    public void driveAuto(int dist) {
+        diffDrive.tankDrive(pid.calculate(enc.get(), dist), pid.calculate(enc.get(), dist));
+    }
+
     /*
     //x is the same unit as the wheel radius defined above (to be defined in robotMap later)
     public void travel(int x) {
@@ -118,6 +129,8 @@ public class SimpleDrive {
     }
     */
 
+
+
     private void feed() {
         drive1.feed();
         drive2.feed();
@@ -132,7 +145,6 @@ public class SimpleDrive {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
             diffDrive.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
-            // diffDrive1.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
         }
     }
 }
