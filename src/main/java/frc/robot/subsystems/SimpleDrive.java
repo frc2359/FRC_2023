@@ -144,7 +144,7 @@ public class SimpleDrive {
         if ((IO.getDriveY()) > 1 || (IO.getDriveY()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
-            diffDrive.arcadeDrive(IO.getDriveY(), IO.getDriveX() * TURN_SPEED_MULT);
+            diffDrive.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
         }
     }
 }
