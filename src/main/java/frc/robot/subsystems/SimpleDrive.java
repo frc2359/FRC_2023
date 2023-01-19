@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -92,7 +94,6 @@ public class SimpleDrive {
         diffDrive.tankDrive(pid.calculate(enc.get(), dist), pid.calculate(enc.get(), dist));
     }
 
-    /*
     //x is the same unit as the wheel radius defined above (to be defined in robotMap later)
     public void travel(int x) {
 
@@ -101,33 +102,58 @@ public class SimpleDrive {
 
         //runs while not at target yet
         while(!finishedTravel()){
-            drive0.set(motorOutputPercentage(x));
-            drive1.set(motorOutputPercentage(x));
-            drive2.set(motorOutputPercentage(x));
-            drive3.set(motorOutputPercentage(x));
+            setMotors(getMotorOutput(x));
+        }
+
+        //stops robot
+        setMotors(0);
+    }
+
+    //PID calculation
+    private double getMotorOutput(int x) {
+
+        //get lastError
+        double lastError = error;
+
+        //calculate new error (e(t))
+        error = x - encoder0.getDistance();
+
+        //calculate P
+        double P = kP * error;
+
+        //calculate dt
+        double dt = Timer.getFPGATimestamp() - lastTimestamp;
+        lastTimestamp = Timer.getFPGATimestamp();
+
+        //calculate errorSum (integral of e(t))
+        errorSum += error * dt;
+
+        //calculate I
+        double I = kI * errorSum;
+
+        //calculate errorRate (derivative of e(t))
+        errorRate = (lastError - error) / dt;
+
+        //calculate D
+        double D = kD * errorRate;
+
+        return P + I + D;
+
+    }
+
+    //distance robot can be from target to stop
+    double errorDistance = 0.5;
+
+    //detects if close enough to target to stop
+    private boolean finishedTravel() {
+
+        if(Math.abs(error) <= errorDistance ){
+            return true;
         }
 
         return false;
 
     }
-
-    
-    private void calcError(double distance, double traveled) {
-        error = distance - traveled; 
-    }
-
-    private double motorOutputPercentage(int distanceToTravel) {
-        calcError(distanceToTravel, encoder0.getDistance());
-        return kP * error;
-    }
-    private boolean finishedTravel() {
-        calcError(error, kP);
-        if(Math.abs(error) <= 0.5){
-                return true;
-            }
-        return false;
-    }
-    */
 
 
     // feed motor safety object
@@ -145,6 +171,7 @@ public class SimpleDrive {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
             diffDrive.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
+            SmartDashboard.putNumber("Encoder Value", enc.get());
         }
     }
 }

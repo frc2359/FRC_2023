@@ -1,7 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import static frc.robot.RobotMap.*;
+
 
 public class IO {
     private static Joystick driver = new Joystick(DRIVE_PORT);
