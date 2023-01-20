@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import frc.robot.RobotMap;
-import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
+// import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -14,14 +14,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.frcteam2910.common.drivers.Gyroscope;
-import org.frcteam2910.common.drivers.SwerveModule;
-import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
-import org.frcteam2910.common.robot.drivers.NavX;
+// import org.frcteam2910.common.drivers.Gyroscope;
+// import org.frcteam2910.common.drivers.SwerveModule;
+// import org.frcteam2910.common.math.Vector2;
+// import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
+// import org.frcteam2910.common.robot.drivers.NavX;
 
 public class SwerveDrive {
-
+/* 
     private static final double TRACKWIDTH = 19.5;
     private static final double WHEELBASE = 23.5;
 
@@ -138,5 +138,6 @@ public class SwerveDrive {
         setDefaultCommand(new DriveCommand());
     }
 }
+*/
 
 }

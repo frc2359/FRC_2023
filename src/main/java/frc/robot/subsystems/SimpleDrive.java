@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.math.controller.PIDController;
-
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.IO;
 import frc.robot.IO.*;
 import static frc.robot.RobotMap.*;
@@ -27,6 +27,7 @@ public class SimpleDrive {
     public final Encoder encoder0 = new Encoder(0, 1);
 
     private DifferentialDrive diffDrive = new DifferentialDrive(drive1, drive2);
+    private DifferentialDrive diffDrive1 = new DifferentialDrive(drive3, drive4);
 
 
     //PID UNKNOWNS
@@ -43,10 +44,13 @@ public class SimpleDrive {
 
     private PIDController pid;
 
-    private Encoder enc = new Encoder(0, 1);
-
     //TIMER
     private double lastTimestamp = 0;
+
+    /**Reset encoder */
+    public void resetEncoder() {
+        encoder0.reset();
+    }
 
     //initialize safety and follow for wheels
     public void init() {
@@ -67,7 +71,7 @@ public class SimpleDrive {
         drive4.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
 
 
-        pid = new PIDController(kP, kI, kD);
+        pid = new PIDController(kP, kI, kD, 0.01);
     }
 
     /** set PID values for testing 
@@ -91,7 +95,8 @@ public class SimpleDrive {
     }
     
     public void driveAuto(int dist) {
-        diffDrive.tankDrive(pid.calculate(enc.get(), dist), pid.calculate(enc.get(), dist));
+        SmartDashboard.putNumber("Encoder Value", encoder0.get());
+        diffDrive.tankDrive(pid.calculate(encoder0.get(), dist), pid.calculate(encoder0.get(), dist));
     }
 
     //x is the same unit as the wheel radius defined above (to be defined in robotMap later)
@@ -171,7 +176,8 @@ public class SimpleDrive {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
             diffDrive.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
-            SmartDashboard.putNumber("Encoder Value", enc.get());
+            diffDrive1.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
+            SmartDashboard.putNumber("Encoder Value", encoder0.get());
         }
     }
 }
