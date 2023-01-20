@@ -14,7 +14,7 @@ public class Gripper {
     private boolean activated = false;
     private static WPI_VictorSPX gripDevice = new WPI_VictorSPX(8);
     private static Joystick buttons = new Joystick(0);
-    private static DigitalInput limSwitch = new DigitalInput(0);
+    private static DigitalInput limSwitch = new DigitalInput(7);
 
 
     public void gripEm(){

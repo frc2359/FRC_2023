@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     //DriveInit
-
+    fauxBot.init();
     //LimelightInit
     Limelight.initNetworkTables();
   }
@@ -63,14 +63,16 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    // fauxbot.errorsum = 0;
-    // fauxbot.lastTimestamp = Timer.getFPGATimestamp();
+    
+    fauxBot.setPIDValues(0.00189, 0.00091, 0.00025);
+    fauxBot.resetEncoder();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
         // fauxBot.travel(10);
+        fauxBot.driveAuto(350);
     }
 
   /* TELEOP */
@@ -85,7 +87,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     fauxBot.drive();
-    grippers.gripEm();
+    // grippers.gripEm();
   }
 
   /* DISABLED */
