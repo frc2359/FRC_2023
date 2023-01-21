@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     
-    fauxBot.setPIDValues(0.00189, 0.00091, 0.00025);
+    fauxBot.setPIDValues(0.00760, 0.1231, 0.0001);
     fauxBot.resetEncoder();
   }
 
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
         // fauxBot.travel(10);
-        fauxBot.driveAuto(350);
+        fauxBot.driveAuto(566);
     }
 
   /* TELEOP */

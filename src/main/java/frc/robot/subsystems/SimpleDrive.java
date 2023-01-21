@@ -95,6 +95,7 @@ public class SimpleDrive {
     }
     
     public void driveAuto(int dist) {
+        feed();
         SmartDashboard.putNumber("Encoder Value", encoder0.get());
         diffDrive.tankDrive(pid.calculate(encoder0.get(), dist), pid.calculate(encoder0.get(), dist));
     }
