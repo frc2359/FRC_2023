@@ -1,33 +1,33 @@
 package frc.robot.subsystems;
 
+import static frc.robot.RobotMap.*;
+
 import java.lang.Math;
 
+import com.swervedrivespecialties.swervelib.SwerveModule;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+
+// EXAMPLE CODE: https://github.com/SwerveDriveSpecialties/swerve-lib-2022-unmaintained/blob/develop/examples/mk3-testchassis/src/main/java/com/swervedrivespecialties/examples/mk3testchassis/subsystems/DrivetrainSubsystem.java
+
 public class SwerveDrive {
+        private SwerveModule frontLeftModule;
+        private SwerveModule frontRightModule;
+        private SwerveModule backLeftModule;
+        private SwerveModule backRightModule;
 
-        // use measured values
-        
-        public final double L = 9;
-        public final double W = 9;
+        private static final double MAX_VOLTAGE = 12.0;
+        public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.14528;
+        public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+        Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
-        public void drive (double x1, double y1, double x2) {
-                double r = Math.sqrt ((L * L) + (W * W));
-                y1 *= -1;
+        public SwerveDrive() {
+                frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
+                        Mk4iSwerveModuleHelper.GearRatio.L1,
+                        FRONT_LEFT_DRIVE,
+                        FRONT_LEFT_STEER,
+                        FRONT_LEFT_ENC,
+                        FRONT_LEFT_MODULE_STEER_OFFSET
+                );
 
-                double a = x1 - x2 * (L / r);
-                double b = x1 + x2 * (L / r);
-                double c = y1 - x2 * (W / r);
-                double d = y1 + x2 * (W / r);
-
-                double backRightSpeed = Math.sqrt ((a * a) + (d * d));
-                double backLeftSpeed = Math.sqrt ((a * a) + (c * c));
-                double frontRightSpeed = Math.sqrt ((b * b) + (d * d));
-                double frontLeftSpeed = Math.sqrt ((b * b) + (c * c));
-
-                // remove the multiplication by 180 to go from degrees to a range from -1 to 1
-
-                double backRightAngle = Math.atan2 (a, d) / Math.PI;
-                double backLeftAngle = Math.atan2 (a, c) / Math.PI;
-                double frontRightAngle = Math.atan2 (b, d) / Math.PI;
-                double frontLeftAngle = Math.atan2 (b, c) / Math.PI;
         }
 }
