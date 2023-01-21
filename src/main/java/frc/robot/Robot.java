@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //subsystems
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Gripper;
@@ -29,7 +29,6 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final Gripper grippers = new Gripper();
-
   
   @Override
   public void robotInit() {
@@ -38,7 +37,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     //DriveInit
-    fauxBot.init();
+    // fauxBot.init();
     //LimelightInit
     Limelight.initNetworkTables();
   }
@@ -61,18 +60,17 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     
-    fauxBot.setPIDValues(0.00189, 0.00091, 0.00025);
-    fauxBot.resetEncoder();
+    // fauxBot.setPIDValues(0.00189, 0.00091, 0.00025);
+    // fauxBot.resetEncoder();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
         // fauxBot.travel(10);
-        fauxBot.driveAuto(350);
+        // fauxBot.driveAuto(350);
     }
 
   /* TELEOP */
@@ -86,7 +84,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    fauxBot.drive();
+    CommandScheduler.getInstance().run();
     // grippers.gripEm();
   }
 

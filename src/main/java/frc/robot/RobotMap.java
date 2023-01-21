@@ -44,12 +44,12 @@ public interface RobotMap {
 
     /* --------------------------- SWERVE MOTOR ID --------------------------- */
     public static final int FRONT_LEFT_DRIVE = 1;
-    public static final int FRONT_LEFT_STEER = 2;
-    public static final int FRONT_RIGHT_DRIVE = 3;
-    public static final int FRONT_RIGHT_STEER = 4;
-    public static final int BACK_LEFT_DRIVE = 5;
-    public static final int BACK_LEFT_STEER = 6;
-    public static final int BACK_RIGHT_DRIVE = 7;
+    public static final int FRONT_LEFT_STEER = 5;
+    public static final int FRONT_RIGHT_DRIVE = 2;
+    public static final int FRONT_RIGHT_STEER = 6;
+    public static final int BACK_LEFT_DRIVE = 3;
+    public static final int BACK_LEFT_STEER = 7;
+    public static final int BACK_RIGHT_DRIVE = 4;
     public static final int BACK_RIGHT_STEER = 8;
 
     /* -------------------------- SWERVE ENCODER PORTS -------------------------- */
@@ -66,6 +66,6 @@ public interface RobotMap {
 
     /* ----------------------------- DRIVE CONSTANTS ---------------------------- */
     public static final int DRIVE_TICKS_TO_ROTATION = 1250;
-    public static final int DRIVETRAIN_TRACKWIDTH_METERS = 1; // front left to front right
-    public static final int DRIVETRAIN_WHEELBASE_METERS = 1;  // front left to back left
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 24.0; // front left to front right
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 25.3;  // front left to back left
 }
