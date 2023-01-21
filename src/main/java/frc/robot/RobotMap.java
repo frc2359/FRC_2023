@@ -66,6 +66,6 @@ public interface RobotMap {
 
     /* ----------------------------- DRIVE CONSTANTS ---------------------------- */
     public static final int DRIVE_TICKS_TO_ROTATION = 1250;
-    public static final int DRIVETRAIN_TRACKWIDTH_METERS = 1;
-    public static final int DRIVETRAIN_WHEELBASE_METERS = 1;
+    public static final int DRIVETRAIN_TRACKWIDTH_METERS = 1; // front left to front right
+    public static final int DRIVETRAIN_WHEELBASE_METERS = 1;  // front left to back left
 }
