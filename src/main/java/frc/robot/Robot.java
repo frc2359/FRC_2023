@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //subsystems
 import frc.robot.subsystems.Drive;
@@ -23,12 +24,13 @@ import frc.robot.subsystems.SimpleDrive;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final SimpleDrive fauxBot = new SimpleDrive();
+  // private static final SimpleDrive fauxBot = new SimpleDrive();
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final Gripper grippers = new Gripper();
+  private final IO container = new IO();
   
   @Override
   public void robotInit() {
