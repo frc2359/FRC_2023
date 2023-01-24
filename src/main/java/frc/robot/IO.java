@@ -34,9 +34,9 @@ public class IO {
 
     private final SwerveDrive drivetrain = new SwerveDrive();
 
-    public void SwerveDrive() {
+    public void swerveDrive() {
         drivetrain.register();
-
+        System.out.println("Bruh");
         drivetrain.setDefaultCommand(new DriveCommand(
                 drivetrain,
                 () -> -modifyAxis(getDriveY()), // Axes are flipped here on purpose

@@ -59,10 +59,10 @@ public interface RobotMap {
     public static final int BACK_RIGHT_ENC = 4;
 
     /* -------------------------- SWERVE STEER OFFSETS -------------------------- */
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(238.97);
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(238.97);
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(238.97);
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(238.97);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(362);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(215);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(125);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(-90);
 
     /* ----------------------------- DRIVE CONSTANTS ---------------------------- */
     public static final int DRIVE_TICKS_TO_ROTATION = 1250;
