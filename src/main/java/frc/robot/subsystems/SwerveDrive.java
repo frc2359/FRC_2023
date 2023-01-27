@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.sensors.PigeonIMU; // REPLACE WITH NAVX
 import com.kauailabs.navx.frc.AHRS;
@@ -28,25 +29,38 @@ public class SwerveDrive extends SubsystemBase {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
             Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
+
+    // initializing the wheels
+
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    // private final PigeonIMU gyroscope = new PigeonIMU(1); // REPLACE WITH NAVX
+    // creating a gyroscope object (NavX)
+
     private final AHRS gyroscope = new AHRS(SPI.Port.kMXP);
+
+    // setting wheel position on the robot
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
             new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / -2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / -2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0));
+
+    // initialize odometry
 
     private final SwerveDriveOdometry odometry;
 
+    // what the speed of each wheel should be
+
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    // method that creates a combination of falcon and neo motors being used together
+
     public SwerveDrive() {
+
         frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
                 SWERVE_GEAR_RATIO,
                 FRONT_LEFT_DRIVE,
@@ -98,6 +112,8 @@ public class SwerveDrive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("gyro", gyroscope.getFusedHeading());
+       
         odometry.update(Rotation2d.fromDegrees(gyroscope.getFusedHeading()),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(frontLeftModule.getDriveVelocity(),
