@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.sensors.PigeonIMU; // REPLACE WITH NAVX
+//import com.ctre.phoenix.sensors.PigeonIMU; // REPLACE WITH NAVX
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 
@@ -41,13 +41,16 @@ public class SwerveDrive extends SubsystemBase {
 
     private final AHRS gyroscope = new AHRS(SPI.Port.kMXP);
 
-    // setting wheel position on the robot
-
+    // setting wheel position on the robot (FR, FL, RR, RL)
+    // * positive x is pointing away from the driver's station
+    // * positive y is pointing perpendicular to x
+    // The angle between x and y is measured in a counter-clockwise direction
+    // From the top down: positive x would be forward, positive y would be to the left
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
             new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0),
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / -2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / -2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0));
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / -2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / -2.0));
 
     // initialize odometry
 
