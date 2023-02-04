@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.sensors.PigeonIMU; // REPLACE WITH NAVX
 import com.kauailabs.navx.frc.AHRS;
@@ -110,6 +111,12 @@ public class SwerveDrive extends SubsystemBase {
                                 new Rotation2d(backRightModule.getSteerAngle())) });
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
+
+
+        SmartDashboard.putNumber("FrontLeft", states[0].angle.getDegrees());
+        SmartDashboard.putNumber("navX", gyroscope.getFusedHeading());
+        SmartDashboard.putNumber("Delta R nX", states[0].angle.getDegrees() - gyroscope.getFusedHeading());
+        SmartDashboard.putNumber("BackRight", states[2].angle.getDegrees());
 
         frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                 states[0].angle.getRadians());

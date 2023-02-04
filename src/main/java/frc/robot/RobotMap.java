@@ -43,14 +43,14 @@ public interface RobotMap {
     public static final GearRatio SWERVE_GEAR_RATIO = Mk4iSwerveModuleHelper.GearRatio.L1;
 
     /* --------------------------- SWERVE MOTOR ID --------------------------- */
-    public static final int FRONT_LEFT_DRIVE = 1;
-    public static final int FRONT_LEFT_STEER = 5;
-    public static final int FRONT_RIGHT_DRIVE = 2;
-    public static final int FRONT_RIGHT_STEER = 6;
-    public static final int BACK_LEFT_DRIVE = 3;
-    public static final int BACK_LEFT_STEER = 7;
-    public static final int BACK_RIGHT_DRIVE = 4;
-    public static final int BACK_RIGHT_STEER = 8;
+    public static final int FRONT_LEFT_DRIVE = 4;
+    public static final int FRONT_LEFT_STEER = 8;
+    public static final int FRONT_RIGHT_DRIVE = 3;
+    public static final int FRONT_RIGHT_STEER = 7;
+    public static final int BACK_LEFT_DRIVE = 2;
+    public static final int BACK_LEFT_STEER = 6;
+    public static final int BACK_RIGHT_DRIVE = 1;
+    public static final int BACK_RIGHT_STEER = 5;
 
     /* -------------------------- SWERVE ENCODER PORTS -------------------------- */
     public static final int FRONT_LEFT_ENC = 1;
