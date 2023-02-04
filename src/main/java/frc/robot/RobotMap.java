@@ -117,15 +117,15 @@ public interface RobotMap {
         public static final int kBackRightTurningMotorPort = 5;
 
 
-        public static final boolean kFrontLeftTurningEncoderReversed = false;
+        public static final boolean kFrontLeftTurningEncoderReversed = true;
         public static final boolean kBackLeftTurningEncoderReversed = true;
         public static final boolean kFrontRightTurningEncoderReversed = true;
         public static final boolean kBackRightTurningEncoderReversed = true;
 
-        public static final boolean kFrontLeftDriveEncoderReversed = false;
-        public static final boolean kBackLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
-        public static final boolean kBackRightDriveEncoderReversed = false;
+        public static final boolean kFrontLeftDriveEncoderReversed = true;
+        public static final boolean kBackLeftDriveEncoderReversed = true;
+        public static final boolean kFrontRightDriveEncoderReversed = true;
+        public static final boolean kBackRightDriveEncoderReversed = true;
 
         //public static final int kFrontLeftDriveAbsoluteEncoderPort = 1;
         //public static final int kBackLeftDriveAbsoluteEncoderPort = 3;
@@ -136,18 +136,17 @@ public interface RobotMap {
         public static final int kFrontRightDriveAbsoluteEncoderPort = 3;
         public static final int kBackRightDriveAbsoluteEncoderPort = 1;
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed =false;
         public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(15);   //345 deg
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -Math.toRadians(55);     // 55 deg
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(37);   // 323 deg
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(84);    // 276 deg
-
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(178);
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(179);
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 13.5;  // 13.5?
+        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 5 * 2 * Math.PI;
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
