@@ -116,6 +116,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("FR Rad", frontRight.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("BL Rad", backLeft.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("BR Rad", backRight.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("FL turn", frontLeft.getTurningPosition());
+        SmartDashboard.putNumber("FR turn", frontRight.getTurningPosition());
+        SmartDashboard.putNumber("BL turn", backLeft.getTurningPosition());
+        SmartDashboard.putNumber("BR turn", backRight.getTurningPosition());
     }
 
     public void stopModules() {
