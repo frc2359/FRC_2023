@@ -93,24 +93,25 @@ public interface RobotMap {
         public static final double kWheelBase = Units.inchesToMeters(24.5);
         // Distance between front and back wheels
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),    // front right
-                new Translation2d(kWheelBase / 2, kTrackWidth / 2),     // front left
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),   // rear right
-                new Translation2d(-kWheelBase / 2, kTrackWidth / 2));   // rear left
-
-        //public static final int kFrontLeftDriveMotorPort = 1;
-        //public static final int kBackLeftDriveMotorPort = 3;
-        //public static final int kFrontRightDriveMotorPort = 2;
-        //public static final int kBackRightDriveMotorPort = 4;
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // front right
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),     // front left
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // rear right
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));   // rear left
+        /*
+        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+            new Translation2d(0, 0),    // front right
+            new Translation2d(0, -kTrackWidth),     // front left
+            new Translation2d(-kWheelBase, kTrackWidth),   // rear right
+            new Translation2d(-kWheelBase, -kTrackWidth));   // rear left
+        */
+    
+    
         public static final int kFrontLeftDriveMotorPort = 4;
         public static final int kBackLeftDriveMotorPort = 2;
         public static final int kFrontRightDriveMotorPort = 3;
         public static final int kBackRightDriveMotorPort = 1;
 
-        //public static final int kFrontLeftTurningMotorPort = 5;
-        //public static final int kBackLeftTurningMotorPort = 7;
-        //public static final int kFrontRightTurningMotorPort = 6;
-        //public static final int kBackRightTurningMotorPort = 8;
+        
         public static final int kFrontLeftTurningMotorPort = 8;
         public static final int kBackLeftTurningMotorPort = 6;
         public static final int kFrontRightTurningMotorPort = 7;
@@ -127,10 +128,6 @@ public interface RobotMap {
         public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackRightDriveEncoderReversed = true;
 
-        //public static final int kFrontLeftDriveAbsoluteEncoderPort = 1;
-        //public static final int kBackLeftDriveAbsoluteEncoderPort = 3;
-        //public static final int kFrontRightDriveAbsoluteEncoderPort = 2;
-        //public static final int kBackRightDriveAbsoluteEncoderPort = 4;
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 4;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
         public static final int kFrontRightDriveAbsoluteEncoderPort = 3;
@@ -151,8 +148,8 @@ public interface RobotMap {
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 5;
+        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
     }
 
     public static final class AutoConstants {

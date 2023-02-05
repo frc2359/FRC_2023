@@ -59,6 +59,13 @@ public class SwerveModule {
         resetEncoders();
     }
 
+    /**Set whether the drive motor is inverted 
+     * @param inv is true when you want to set it to inverted
+    */
+    public void invertDrive(boolean inv) {
+        driveMotor.setInverted(inv);
+    }
+
     public double getDrivePosition() {
         return driveMotor.getSelectedSensorPosition();
     }

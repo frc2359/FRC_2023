@@ -100,6 +100,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        backLeft.invertDrive(true);
         odometer.update(getRotation2d(),
                         new SwerveModulePosition[] {
                             frontRight.getPosition(),
