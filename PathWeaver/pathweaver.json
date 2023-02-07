@@ -1,9 +1,0 @@
-{
-  "lengthUnit": "Meter",
-  "exportUnit": "Always Meters",
-  "maxVelocity": 5.0,
-  "maxAcceleration": 7.0,
-  "trackWidth": 0.622,
-  "gameName": "FIRST Power Up",
-  "outputDir": "../paths"
-}
