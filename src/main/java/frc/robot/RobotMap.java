@@ -84,6 +84,7 @@ public interface RobotMap {
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
         public static final double kPTurning = 0.5;
+        public static final double kPDriving = 0.5;
     }
 
     public static final class DriveConstants {
@@ -148,8 +149,8 @@ public interface RobotMap {
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 5;
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 7;
+        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 7;
     }
 
     public static final class AutoConstants {
@@ -176,6 +177,6 @@ public interface RobotMap {
         public static final int kDriverRotAxis = 2;
         public static final int kDriverFieldOrientedButtonIdx = 1;
 
-        public static final double kDeadband = 0.1;
+        public static final double kDeadband = 0.2;
     }
 }

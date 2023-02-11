@@ -27,6 +27,7 @@ public class SwerveModule {
     private final RelativeEncoder turningEncoder;   // Use SparkMax encoder for turning
 
     private final PIDController turningPidController;
+    private final PIDController drivingPidController;
 
     private final CANCoder absoluteEncoder;         // Use CANCoder for absolute position
     private final boolean absoluteEncoderReversed;
@@ -55,6 +56,9 @@ public class SwerveModule {
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
+
+        drivingPidController = new PIDController(ModuleConstants.kPDriving, 0, 0);
+        drivingPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
     }
