@@ -7,12 +7,16 @@ import java.lang.Math;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import frc.robot.Constants.DriveConstants;
 //import frc.robot.Constants.ModuleConstants;
@@ -61,6 +65,63 @@ public class SwerveModule {
         drivingPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
+
+        // iniVelcotyMode();
+    }
+
+    /**Initialize velocity mode */
+    public void iniVelcotyMode() {
+        /* Factory default hardware to prevent unexpected behavior */
+		driveMotor.configFactoryDefault();
+
+		/* Configure Sensor Source for Pirmary PID */
+		driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, AutoConstants.kPIDLoopIdx,
+        AutoConstants.kTimeoutMs);
+
+		/* set deadband to super small 0.001 (0.1 %).
+			The default deadband is 0.04 (4 %) */
+		driveMotor.configNeutralDeadband(0.01, AutoConstants.kTimeoutMs);
+
+		/**
+		 * Configure Talon FX Output and Sensor direction accordingly Invert Motor to
+		 * have green LEDs when driving Talon Forward / Requesting Postiive Output Phase
+		 * sensor to have positive increment when driving Talon Forward (Green LED)
+		 */
+		driveMotor.setSensorPhase(false);
+		/*
+		 * Talon FX does not need sensor phase set for its integrated sensor
+		 * This is because it will always be correct if the selected feedback device is integrated sensor (default value)
+		 * and the user calls getSelectedSensor* to get the sensor's position/velocity.
+		 * 
+		 * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#sensor-phase
+		 */
+        // driveMotor.setSensorPhase(true);
+
+		/* Set relevant frame periods to be at least as fast as periodic rate */
+		driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, AutoConstants.kTimeoutMs);
+		driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, AutoConstants.kTimeoutMs);
+
+		/* Set the peak and nominal outputs */
+		driveMotor.configNominalOutputForward(0, AutoConstants.kTimeoutMs);
+		driveMotor.configNominalOutputReverse(0, AutoConstants.kTimeoutMs);
+		driveMotor.configPeakOutputForward(1, AutoConstants.kTimeoutMs);
+		driveMotor.configPeakOutputReverse(-1, AutoConstants.kTimeoutMs);
+
+		/* Set Motion Magic gains in slot0 - see documentation */
+		driveMotor.selectProfileSlot(AutoConstants.kSlotIdx, AutoConstants.kPIDLoopIdx);
+		driveMotor.config_kF(AutoConstants.kSlotIdx, AutoConstants.kGains.kF, AutoConstants.kTimeoutMs);
+		driveMotor.config_kP(AutoConstants.kSlotIdx, AutoConstants.kGains.kP, AutoConstants.kTimeoutMs);
+		driveMotor.config_kI(AutoConstants.kSlotIdx, AutoConstants.kGains.kI, AutoConstants.kTimeoutMs);
+		driveMotor.config_kD(AutoConstants.kSlotIdx, AutoConstants.kGains.kD, AutoConstants.kTimeoutMs);
+
+		/* Set acceleration and vcruise velocity - see documentation */
+		driveMotor.configMotionCruiseVelocity(15000, AutoConstants.kTimeoutMs);
+		driveMotor.configMotionAcceleration(6000, AutoConstants.kTimeoutMs);
+
+        driveMotor.configMotionSCurveStrength(5);
+
+		/* Zero the sensor once on robot boot up */
+		driveMotor.setSelectedSensorPosition(0, AutoConstants.kPIDLoopIdx, AutoConstants.kTimeoutMs);
     }
 
     /**Set whether the drive motor is inverted 
@@ -114,8 +175,19 @@ public class SwerveModule {
             return;
         }
         state = SwerveModuleState.optimize(state, getState().angle);
+
+        // SET MOTORS ----------------------------------------------------------------------
+        
+        // percent out control
         driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-            // could update driveMotor to velocity control
+        
+        // positon control
+        /* 2048 ticks/rev * 10 Rotations in either direction */
+        // double convToSensorCounts = (state.speedMetersPerSecond * (2048 / (ModuleConstants.kWheelDiameterMeters * Math.PI))) / 8.14;
+        // convToSensorCounts =  convToSensorCounts > DriveConstants.kPhysicalMaxSpeedMetersPerSecond ? DriveConstants.kPhysicalMaxSpeedMetersPerSecond : convToSensorCounts; 
+		System.out.println(state.speedMetersPerSecond);
+        // driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond);
+
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
         //SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
     }

@@ -88,17 +88,25 @@ public interface RobotMap {
     }
 
     public static final class DriveConstants {
+        /* -------------------------------------------------------------------------- */
+        /*                             PHYSICAL CONSTANTS                             */
+        /* -------------------------------------------------------------------------- */
 
+        // set Distance between right and left wheels
         public static final double kTrackWidth = Units.inchesToMeters(16.5);
-        // Distance between right and left wheels
+        
+        // set Distance between front and back wheels
         public static final double kWheelBase = Units.inchesToMeters(24.5);
-        // Distance between front and back wheels
+        
+        // set location of each module in relation to the center
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // front right
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),     // front left
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // rear right
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));   // rear left
+        
         /*
+        //Set FR as center
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(0, 0),    // front right
             new Translation2d(0, -kTrackWidth),     // front left
@@ -106,7 +114,11 @@ public interface RobotMap {
             new Translation2d(-kWheelBase, -kTrackWidth));   // rear left
         */
     
-    
+        /* -------------------------------------------------------------------------- */
+        /*                            DRIVETRAIN CONSTANTS                            */
+        /* -------------------------------------------------------------------------- */
+
+        // MOTOR CONSTANTS ----------------------------------------------------------
         public static final int kFrontLeftDriveMotorPort = 4;
         public static final int kBackLeftDriveMotorPort = 2;
         public static final int kFrontRightDriveMotorPort = 3;
@@ -129,6 +141,7 @@ public interface RobotMap {
         public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackRightDriveEncoderReversed = true;
 
+        // ENCODER CONSTANTS ---------------------------------------------------------
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 4;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
         public static final int kFrontRightDriveAbsoluteEncoderPort = 3;
@@ -143,7 +156,9 @@ public interface RobotMap {
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(179);
         public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 13.5;  // 13.5?
+        
+        // SPEED CONSTANTS ---------------------------------------------------------
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 5;  // 13.5?
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 5 * 2 * Math.PI;
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
@@ -167,6 +182,57 @@ public interface RobotMap {
                 new TrapezoidProfile.Constraints(
                         kMaxAngularSpeedRadiansPerSecond,
                         kMaxAngularAccelerationRadiansPerSecondSquared);
+
+        /* -------------------------------------------------------------------------- */
+        /*                   DRIVE CONSTANTS - VELOCITY MOTION MAGIC                  */
+        /* -------------------------------------------------------------------------- */
+        /**
+         * Which PID slot to pull gains from. Starting 2018, you can choose from
+         * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
+         * configuration.
+         */
+        public static final int kSlotIdx = 0;
+
+        /**
+         * Talon FX supports multiple (cascaded) PID loops. For
+         * now we just want the primary one.
+         */
+        public static final int kPIDLoopIdx = 0;
+
+        /**
+         * set to zero to skip waiting for confirmation, set to nonzero to wait and
+         * report to DS if action fails.
+         */
+        public static final int kTimeoutMs = 30;
+
+        /**
+         * Gains used in Motion Magic, to be adjusted accordingly
+         * Gains(kp, ki, kd, kf, izone, peak output);
+         */
+        public static final Gains kGains = new Gains(0.2, 0.0, 0.0, 0.2, 0, 1.0);
+
+        
+    }
+
+    /**
+     *  Class that organizes gains used when assigning values to slots
+     */
+    public static final class Gains {
+        public final double kP;
+        public final double kI;
+        public final double kD;
+        public final double kF;
+        public final int kIzone;
+        public final double kPeakOutput;
+        
+        public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput){
+            kP = _kP;
+            kI = _kI;
+            kD = _kD;
+            kF = _kF;
+            kIzone = _kIzone;
+            kPeakOutput = _kPeakOutput;
+        }
     }
 
     public static final class OIConstants {

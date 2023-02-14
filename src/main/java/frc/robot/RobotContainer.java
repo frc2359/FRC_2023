@@ -1,6 +1,11 @@
 package frc.robot;
 
 import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -19,6 +24,7 @@ import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.AutoPathCmd;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class RobotContainer {
@@ -41,6 +47,12 @@ public class RobotContainer {
     //private void configureButtonBindings() {
     //    new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
     //}
+
+    public Command runPath() {
+        final AutoPathCmd commad = new AutoPathCmd();
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(4, 3));
+        return commad.followTrajectoryCommand(swerveSubsystem, examplePath, true);
+    }
 
     public Command getAutonomousCommand() {
         // 1. Create trajectory settings

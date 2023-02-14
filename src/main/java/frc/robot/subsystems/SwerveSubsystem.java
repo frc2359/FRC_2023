@@ -14,6 +14,8 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
+    public SwerveDriveKinematics kinematics;
+
     private final SwerveModule frontLeft = new SwerveModule(
             DriveConstants.kFrontLeftDriveMotorPort,
             DriveConstants.kFrontLeftTurningMotorPort,
@@ -121,6 +123,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("FR turn", frontRight.getTurningPosition());
         SmartDashboard.putNumber("BL turn", backLeft.getTurningPosition());
         SmartDashboard.putNumber("BR turn", backRight.getTurningPosition());
+        SmartDashboard.putNumber("FL Sensor Pos", frontLeft.getDrivePosition());
+        SmartDashboard.putNumber("FL Sensor Vel", frontLeft.getDriveVelocity());
     }
 
     public void stopModules() {
