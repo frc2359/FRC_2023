@@ -2,6 +2,7 @@ package frc.robot;
 
 //import com.swervedrivespecialties.swervelib.SwerveModule;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -158,14 +159,14 @@ public interface RobotMap {
         public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
         
         // SPEED CONSTANTS ---------------------------------------------------------
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 5;  // 13.5?
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 5 * 2 * Math.PI;
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 3.5;  // 13.5?
+        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 7;
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 7;
+        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
     }
 
     public static final class AutoConstants {
