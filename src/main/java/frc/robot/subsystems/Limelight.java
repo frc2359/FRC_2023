@@ -38,10 +38,18 @@ public class Limelight implements Subsystem{
     }
 
     //NEED TO KNOW MOUNT ANGLE, MOUNT HEIGHT, AND APRIL TAG TARGET HEIGHT
-    public static double calculateDistance(double limelightMountAngleDegrees, double limelightLensHeightInches, double goalHeightInches) {
-        double angleToGoalDegrees = limelightMountAngleDegrees + getLimelightYAngle();
-        double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
-        return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    // public static double calculateDistance(double limelightMountAngleDegrees, double limelightLensHeightInches, double goalHeightInches) {
+    //     double angleToGoalDegrees = limelightMountAngleDegrees + getLimelightYAngle();
+    //     double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
+    //     return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    // }
+
+    public static double calculateDistance(double YAngle, double limeHeight, double XAngle){
+        double distance = limeHeight/Math.tan(YAngle);
+        if(XAngle < 0){
+            // turn right, turn left for if greater than 0 (excluding margin of error)
+        }
+        return distance;
     }
 
 }
