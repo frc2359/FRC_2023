@@ -132,7 +132,7 @@ public class SwerveModule {
     }
 
     public double getDrivePosition() {
-        return driveMotor.getSelectedSensorPosition();
+        return ModuleConstants.kDriveEncoderRot2Meter * (driveMotor.getSelectedSensorPosition() / 2048);
     }
 
     public double getTurningPosition() {
@@ -144,7 +144,9 @@ public class SwerveModule {
     }
 
     public double getDriveVelocity() {
-        return driveMotor.getSelectedSensorVelocity();
+        double driveVelRpS = (driveMotor.getSelectedSensorVelocity() * 10) / 2048;
+        double driveVelMpS = driveVelRpS * ModuleConstants.kDriveEncoderRot2Meter;
+        return driveVelMpS;
     }
 
     public double getTurningVelocity() {
