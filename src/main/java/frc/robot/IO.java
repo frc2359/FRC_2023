@@ -30,6 +30,10 @@ public class IO {
         return driver.getTwist();
     }
 
+    public static double getPOV() {
+        return driver.getPOV();
+    }
+
     private static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {

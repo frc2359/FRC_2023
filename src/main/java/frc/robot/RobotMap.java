@@ -246,4 +246,9 @@ public interface RobotMap {
 
         public static final double kDeadband = 0.2;
     }
+
+    public static final class LifterConstants {
+        
+    }
+
 }
