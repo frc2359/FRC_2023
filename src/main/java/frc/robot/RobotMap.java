@@ -13,7 +13,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public interface RobotMap {
 
     /* ---------------------------------- IO & HANDLING --------------------------------- */
-    public static final int DRIVE_PORT = 1; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
+    public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
+    public static final int LIFT_PORT = 1;
     public static final double TURN_SPEED_MULT = 1;
     public static final double DRIVE_SPEED_MULT = 1;
 
@@ -248,7 +249,16 @@ public interface RobotMap {
     }
 
     public static final class LifterConstants {
-        
+        public static final int LIFT_ID = 10;
+        public static final int EXTEND_ID = 11;
+        public static final int CLAW_ID = 12;
+        public static final int LIFT_LIMIT = 2;
+
+    }
+
+    public static final class ClawConstants{
+        public static final int OPEN_LIM = 6; // set # later
+        public static final int CLOSE_LIM = 7; // set # later
     }
 
 }
