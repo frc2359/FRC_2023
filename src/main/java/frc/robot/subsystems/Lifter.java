@@ -9,13 +9,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.IO;
 
+import static frc.robot.RobotMap.*;
+
 
 public class Lifter {
         
     //Create SPARK MAX object
-    private CANSparkMax spark = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax spark = new CANSparkMax(LifterConstants.LIFT_ID, MotorType.kBrushless);
     private RelativeEncoder e = spark.getEncoder();
-    private DigitalInput dio = new DigitalInput(2);
+    private DigitalInput dio = new DigitalInput(LifterConstants.LIFT_LIMIT);
 
     //Set PID constants
     double kP = 0.1;
@@ -27,7 +29,11 @@ public class Lifter {
     double kMinOutput = -1;
 
     public void init() {
+        // e.setPositionConversionFactor((1/233.33));
+    }
 
+    public double getRotationAngle() {
+        return ((e.getPosition() / 233.33) * 360);
     }
 
     public void run(double setpoint) {
@@ -47,8 +53,11 @@ public class Lifter {
     }
 
     public void manualRun() {
-        SmartDashboard.putNumber("Lifter Encoder", e.getPosition());
-        if(dio.get()) {
+        SmartDashboard.putNumber("Lifter Encoder", ((e.getPosition() / 233.33) * 360));
+        SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
+        SmartDashboard.putBoolean("DIO", dio.get());
+        SmartDashboard.putNumber("POV", IO.getPOV());
+        if(!dio.get()) {
             e.setPosition(0);
             spark.set(0);
         } else {

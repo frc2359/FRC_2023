@@ -190,7 +190,7 @@ public class SwerveModule {
         /* 2048 ticks/rev * 10 Rotations in either direction */
         // double convToSensorCounts = (state.speedMetersPerSecond * (2048 / (ModuleConstants.kWheelDiameterMeters * Math.PI))) / 8.14;
         // convToSensorCounts =  convToSensorCounts > DriveConstants.kPhysicalMaxSpeedMetersPerSecond ? DriveConstants.kPhysicalMaxSpeedMetersPerSecond : convToSensorCounts; 
-		System.out.println(state.speedMetersPerSecond);
+		// System.out.println(state.speedMetersPerSecond);
         // driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond);
 
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));

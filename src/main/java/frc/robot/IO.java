@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.button.Button;
 
@@ -9,7 +10,12 @@ import static frc.robot.RobotMap.*;
 
 public class IO {
     private static Joystick driver = new Joystick(DRIVE_PORT);
+    private static XboxController liftCont = new XboxController(LIFT_PORT);
 
+    public static boolean getButton(int btn) {
+        return driver.getRawButtonPressed(btn);
+    }
+    
     public static double getDriveX() {
         return driver.getX();
     }
@@ -31,6 +37,7 @@ public class IO {
     }
 
     public static double getPOV() {
+        // return liftCont.getLeftTriggerAxis() - liftCont.getRightTriggerAxis();
         return driver.getPOV();
     }
 
