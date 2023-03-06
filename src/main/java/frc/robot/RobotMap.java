@@ -249,16 +249,39 @@ public interface RobotMap {
     }
 
     public static final class LifterConstants {
+        public static final double kMaxAngularSpeedRadiansPerSecond = 0.9;
+        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 0.2;
         public static final int LIFT_ID = 10;
         public static final int EXTEND_ID = 11;
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 2;
 
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
+                new TrapezoidProfile.Constraints(
+                        kMaxAngularSpeedRadiansPerSecond,
+                        kMaxAngularAccelerationRadiansPerSecondSquared);
+
     }
 
-    public static final class ClawConstants{
-        public static final int OPEN_LIM = 6; // set # later
-        public static final int CLOSE_LIM = 7; // set # later
+    public static final class ClawConstants {
+        public static final int CLAW_MOT_ID = 12;
+        
+
+        /* ---------------------------------- CASES --------------------------------- */
+        public static final int CASE_STOP = 0;
+        public static final int CASE_OPEN = 1;
+        public static final int CASE_CLOSED = 2;
+    }
+
+    public static final class ExtenderConstants {
+        public static final int EXTEND_MOT_ID = 13;
+
+        /* ---------------------------------- CASES --------------------------------- */
+        public static final int CASE_ZERO_ENCODERS = -1;
+        public static final int CASE_STOP = 0;
+        public static final int CASE_UP = 1;
+        public static final int CASE_DOWN = 2;
+        public static final int CASE_EXTEND_TO_DIST = 3;
     }
 
 }

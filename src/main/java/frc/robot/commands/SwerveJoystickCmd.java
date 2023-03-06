@@ -4,9 +4,13 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
 import java.util.function.Supplier;
+
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -17,6 +21,12 @@ public class SwerveJoystickCmd extends CommandBase {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+
+    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+
+    double pitchAngleDegrees    = gyro.getPitch();
+    double rollAngleDegrees     = gyro.getRoll();
+
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
@@ -35,6 +45,24 @@ public class SwerveJoystickCmd extends CommandBase {
     @Override
     public void initialize() {
 
+    }
+
+    /**Balance the robot */
+    public void balance() {
+        double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
+        double xAxisRate = Math.sin(pitchAngleRadians) * -1;
+
+
+        // 4. Construct desired chassis speeds
+        ChassisSpeeds chassisSpeeds;
+        chassisSpeeds = new ChassisSpeeds(xAxisRate, 0, 0);
+         
+      
+        // 5. Convert chassis speeds to individual module states
+        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+ 
+        // 6. Output each module states to wheels
+        swerveSubsystem.setModuleStates(moduleStates);
     }
 
     @Override
