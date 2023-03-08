@@ -9,7 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,14 +18,14 @@ import static frc.robot.RobotMap.*;
 import static frc.robot.RobotMap.ExtenderConstants.*;
 
 public class Extender {
-    private static TalonSRX gripMot;
+    private static TalonSRX extendMot;
     private int state = 0;
     private double distance = 0;
 
     public void init() {
-        gripMot = new TalonSRX(EXTEND_MOT_ID);
+        extendMot = new TalonSRX(EXTEND_MOT_ID);
         // gripMot.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-        gripMot.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        extendMot.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
         //0 encoder
     }
 
@@ -40,25 +39,35 @@ public class Extender {
         this.state = CASE_EXTEND_TO_DIST;
     }
 
+    public double getDistanceInches() {
+        return extendMot.getSelectedSensorPosition() / 195.44;
+    }
+
     /**Case system that directly controls movement */
     public void extendEm() {
-        SmartDashboard.putNumber("Extender Encoder", gripMot.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Extender Inches", getDistanceInches());
+        SmartDashboard.putNumber("Extender Case", state);
+        SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
+        SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
+
+        
 
         switch(state) {
             case CASE_ZERO_ENCODERS:
-                gripMot.setSelectedSensorPosition(0);
+                extendMot.setSelectedSensorPosition(0);
                 state = CASE_STOP;
             case CASE_STOP:
-                gripMot.set(ControlMode.PercentOutput, 0);
+                extendMot.set(ControlMode.PercentOutput, 0);
                 break;
             case CASE_UP:
-                gripMot.set(ControlMode.PercentOutput, 0.5);
+                extendMot.set(ControlMode.PercentOutput, 0.5);
                 break;
             case CASE_DOWN:
-                gripMot.set(ControlMode.PercentOutput, -0.5);
+                extendMot.set(ControlMode.PercentOutput, -0.5);
                 break;
             case CASE_EXTEND_TO_DIST:
-                gripMot.set(ControlMode.Position, distance);
+                extendMot.set(ControlMode.Position, distance);
                 break;
         }
     }
@@ -67,26 +76,22 @@ public class Extender {
     public void manualRun() {
         extendEm();
 
-        if(IO.getButton(10) || (!IO.getButton(3) && !IO.getButton(4))){
-            state = CASE_STOP;
-        }
-
-        if(IO.getButton(3)){
-            gripMot.set(ControlMode.PercentOutput, 0.5);
+        if(SEPARATE_CONTROLS ? IO.getLiftControlLeftX() > 0.1 : IO.isPOVToAngle(90)){
+            extendMot.set(ControlMode.PercentOutput, 0.5);
             state = CASE_UP;
         }
 
-        if(IO.getButton(4)){
-            gripMot.set(ControlMode.PercentOutput, -0.5);
-            state = CASE_DOWN;
+        if(SEPARATE_CONTROLS ? IO.getLiftControlLeftX() < -0.1 : IO.isPOVToAngle(270)){
+            if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
+                extendMot.set(ControlMode.PercentOutput, 0);
+                state = CASE_ZERO_ENCODERS;
+            } else {
+                state = CASE_DOWN;
+            }
+        } else {
+            state = CASE_STOP;
         }
 
-        if(state == -1 && gripMot.getSensorCollection().isRevLimitSwitchClosed()) {
-            state = CASE_ZERO_ENCODERS;
-        }
-
-        if(state == 1 && gripMot.getSensorCollection().isFwdLimitSwitchClosed()) {
-            state = CASE_ZERO_ENCODERS;
-        }
+        
     }
 }

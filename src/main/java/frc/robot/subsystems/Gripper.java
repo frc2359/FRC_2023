@@ -52,6 +52,9 @@ public class Gripper {
 
     public void manualRun() {
         gripEm();
+        //reverse = open
+        SmartDashboard.putBoolean("Gripper Reverse", gripMotor.getSensorCollection().isRevLimitSwitchClosed());
+        SmartDashboard.putBoolean("Gripper Forward", gripMotor.getSensorCollection().isFwdLimitSwitchClosed());
 
         if(state == CASE_OPEN) {
             SmartDashboard.putBoolean("Gripper Opened", true);
@@ -59,17 +62,29 @@ public class Gripper {
             SmartDashboard.putBoolean("Gripper Opened", false);
         }
 
-        if(IO.getButton(10)){
-            state = CASE_CLOSED;
+        if(SEPARATE_CONTROLS) {
+            if(IO.isAPressed()) {
+                state = CASE_CLOSED;
+            } else if (IO.isYPressed()) {
+                state = CASE_OPEN;
+            } else if(IO.isBPressed()) {
+                state = CASE_STOP;
+            }
+        } else {
+            if(IO.getButton(10)){
+                state = CASE_STOP;
+            }
+    
+            if(IO.getButton(3)){
+                state = CASE_OPEN;
+            }
+    
+            if(IO.getButton(4)){
+                state = CASE_CLOSED;
+            }
         }
 
-        if(IO.getButton(3)){
-            state = CASE_OPEN;
-        }
-
-        if(IO.getButton(4)){
-            state = CASE_CLOSED;
-        }
+        
 
         if(state == CASE_CLOSED && gripMotor.getSensorCollection().isRevLimitSwitchClosed()) {
             gripMotor.set(ControlMode.PercentOutput, 0);

@@ -15,6 +15,9 @@ public interface RobotMap {
     /* ---------------------------------- IO & HANDLING --------------------------------- */
     public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
     public static final int LIFT_PORT = 1;
+
+    public static final boolean SEPARATE_CONTROLS = false;
+
     public static final double TURN_SPEED_MULT = 1;
     public static final double DRIVE_SPEED_MULT = 1;
 
@@ -249,18 +252,18 @@ public interface RobotMap {
     }
 
     public static final class LifterConstants {
-        public static final double kMaxAngularSpeedRadiansPerSecond = 0.9;
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 0.2;
+        public static final double kMaxVoltage = 0.75;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 1.2;
+        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 1.2;
         public static final int LIFT_ID = 10;
         public static final int EXTEND_ID = 11;
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 2;
 
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
                 new TrapezoidProfile.Constraints(
                         kMaxAngularSpeedRadiansPerSecond,
                         kMaxAngularAccelerationRadiansPerSecondSquared);
-
     }
 
     public static final class ClawConstants {
