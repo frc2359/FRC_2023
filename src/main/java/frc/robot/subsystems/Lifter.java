@@ -93,7 +93,7 @@ public class Lifter {
                 } else if (IO.isPOVToAngle(0)) {
                     s_Pid.setReference(2, ControlType.kVoltage);
                     // spark.set(0.75);
-                    if(e.getPosition() >= 126) {
+                    if(e.getPosition() >= 114) {
                         spark.set(0);
                     }
                    

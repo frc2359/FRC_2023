@@ -29,6 +29,10 @@ public class IO {
         return liftCont.getLeftX();
     }
 
+    public static double getLiftControlRightX() {
+        return liftCont.getRightX();
+    }
+
     /**Checks X <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isXPressed() {
         return liftCont.getXButtonPressed();
@@ -71,7 +75,8 @@ public class IO {
 
     /**Checks stick twist <b>FOR THE DRIVE CONTROLLER</b> */
     public static double getDriveTwist() {
-        return Math.abs(driver.getTwist()) > 0.1 ? driver.getTwist() : 0;
+        SmartDashboard.putNumber("Twist", driver.getTwist());
+        return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
     }
 
     /**Checks POV (little hat guy on top) <b>FOR THE DRIVE CONTROLLER</b> */

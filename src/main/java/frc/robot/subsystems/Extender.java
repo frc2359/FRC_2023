@@ -76,12 +76,12 @@ public class Extender {
     public void manualRun() {
         extendEm();
 
-        if(SEPARATE_CONTROLS ? IO.getLiftControlLeftX() > 0.1 : IO.isPOVToAngle(90)){
+        if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
             extendMot.set(ControlMode.PercentOutput, 0.5);
             state = CASE_UP;
         }
 
-        if(SEPARATE_CONTROLS ? IO.getLiftControlLeftX() < -0.1 : IO.isPOVToAngle(270)){
+        if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() < -0.1 : IO.isPOVToAngle(270)){
             if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
                 extendMot.set(ControlMode.PercentOutput, 0);
                 state = CASE_ZERO_ENCODERS;

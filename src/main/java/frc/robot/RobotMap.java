@@ -16,7 +16,7 @@ public interface RobotMap {
     public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
     public static final int LIFT_PORT = 1;
 
-    public static final boolean SEPARATE_CONTROLS = false;
+    public static final boolean SEPARATE_CONTROLS = true;
 
     public static final double TURN_SPEED_MULT = 1;
     public static final double DRIVE_SPEED_MULT = 1;
@@ -157,7 +157,7 @@ public interface RobotMap {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(178);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(179);
         public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
@@ -252,7 +252,7 @@ public interface RobotMap {
     }
 
     public static final class LifterConstants {
-        public static final double kMaxVoltage = 0.75;
+        public static final double kMaxVoltage = 2;
         public static final double kMaxAngularSpeedRadiansPerSecond = 1.2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 1.2;
         public static final int LIFT_ID = 10;
