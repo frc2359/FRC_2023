@@ -2,25 +2,30 @@ package frc.robot.subsystems;
 //Import SPARK MAX libraries
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.IO;
 
 import static frc.robot.RobotMap.*;
+import static frc.robot.RobotMap.LifterConstants.*;
 
 
 public class Lifter {
         
     //Create SPARK MAX object
-    private CANSparkMax spark = new CANSparkMax(LifterConstants.LIFT_ID, MotorType.kBrushless);
+    private CANSparkMax spark = new CANSparkMax(LIFT_ID, MotorType.kBrushless);
+    private SparkMaxPIDController s_Pid;
     private RelativeEncoder e = spark.getEncoder();
-    private DigitalInput dio = new DigitalInput(LifterConstants.LIFT_LIMIT);
+    private DigitalInput dio = new DigitalInput(LIFT_LIMIT);
 
     //Set PID constants
-    double kP = 0.1;
+    double kP = 0.2;
     double kI = 0;
     double kD = 0;
     double kIz = 0;
@@ -28,48 +33,79 @@ public class Lifter {
     double kMaxOutput = 1;
     double kMinOutput = -1;
 
+    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
     public void init() {
-        // e.setPositionConversionFactor((1/233.33));
+        e.setPositionConversionFactor((1/(5*5*4*4)));
+        s_Pid = spark.getPIDController();
+        s_Pid.setSmartMotionMaxAccel(kMaxAngularAccelerationRadiansPerSecondSquared, 0);
+        s_Pid.setSmartMotionMaxVelocity(kMaxAngularSpeedRadiansPerSecond, 0);
+        s_Pid.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+
+        s_Pid.setP(kP);
+        s_Pid.setI(kI);
+        s_Pid.setD(kD);
+        s_Pid.setIZone(kIz);
+        s_Pid.setFF(kFF);
+        s_Pid.setOutputRange(kMinOutput, kMaxOutput);
+
+        spark.getPIDController().setFeedbackDevice(spark.getEncoder());
     }
 
     public double getRotationAngle() {
         return ((e.getPosition() / 233.33) * 360);
     }
-
     public void run(double setpoint) {
-        //Set feedback device as integrated encoder
-        spark.getPIDController().setFeedbackDevice(spark.getEncoder());
-
-        //Set PID coefficients
-        spark.getPIDController().setP(kP);
-        spark.getPIDController().setI(kI);
-        spark.getPIDController().setD(kD);
-        spark.getPIDController().setIZone(kIz);
-        spark.getPIDController().setFF(kFF);
-        spark.getPIDController().setOutputRange(kMinOutput, kMaxOutput);
 
         //Send desired position to controller
         spark.getPIDController().setReference(setpoint, ControlType.kPosition);
     }
 
     public void manualRun() {
-        SmartDashboard.putNumber("Lifter Encoder", ((e.getPosition() / 233.33) * 360));
+        SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
         SmartDashboard.putBoolean("DIO", dio.get());
-        SmartDashboard.putNumber("POV", IO.getPOV());
+
+        TrapezoidProfile.State state = new TrapezoidProfile.State(7, 10);
+        TrapezoidProfile trap = new TrapezoidProfile(kThetaControllerConstraints, state);
+
+
         if(!dio.get()) {
             e.setPosition(0);
             spark.set(0);
         } else {
-            if(IO.getPOV() == -1) {
-                spark.set(0);
-            } else if (IO.getPOV() == 180) {
-                spark.set(-0.5);
-            } else if (IO.getPOV() == 0) {
-                spark.set(0.5);
-            } else {
-                spark.set(0);
+            while(SEPARATE_CONTROLS ? IO.isXPressed() : IO.getButton(12)) {
+                s_Pid.setReference(25, ControlType.kSmartMotion);
             }
+            if(SEPARATE_CONTROLS) {
+                if(e.getPosition() >= 126 && IO.getLiftControlLeftY() > 0) {
+                    spark.set(0);
+                } else {
+                    s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+                }
+            } else {
+                if(IO.isPOVToAngle(-1)) {
+                    s_Pid.setReference(0, ControlType.kVoltage);
+                } else if (IO.isPOVToAngle(180)) {
+                    // spark.set(-0.75);
+                    s_Pid.setReference(-2, ControlType.kVoltage);
+                } else if (IO.isPOVToAngle(0)) {
+                    s_Pid.setReference(2, ControlType.kVoltage);
+                    // spark.set(0.75);
+                    if(e.getPosition() >= 114) {
+                        spark.set(0);
+                    }
+                   
+                } else {
+                    s_Pid.setReference(0, ControlType.kVoltage);
+                }
+
+                
+            }
+
+            
+            
         }
     }
 }

@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -14,6 +15,7 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
+    
     public SwerveDriveKinematics kinematics;
 
     private final SwerveModule frontLeft = new SwerveModule(
@@ -53,6 +55,9 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+
+    double pitchAngleDegrees    = gyro.getPitch();
+    double rollAngleDegrees     = gyro.getRoll();
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
                     RobotMap.DriveConstants.kDriveKinematics,
@@ -141,4 +146,25 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
     }
+
+
+
+
+    /**Balance the robot */
+    // public void balance() {
+    //     double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
+    //     double xAxisRate = Math.sin(pitchAngleRadians) * -1;
+
+
+    //     // 4. Construct desired chassis speeds
+    //     ChassisSpeeds chassisSpeeds;
+    //     chassisSpeeds = new ChassisSpeeds(xAxisRate, ySpeed, turningSpeed);
+         
+      
+    //     // 5. Convert chassis speeds to individual module states
+    //     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+ 
+    //     // 6. Output each module states to wheels
+    //     setModuleStates(moduleStates);
+    // }
 }
