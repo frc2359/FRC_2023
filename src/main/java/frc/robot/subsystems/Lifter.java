@@ -35,6 +35,7 @@ public class Lifter {
 
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+    private static int states = 0; 
 
     public void init() {
         e.setPositionConversionFactor((1/(5*5*4*4)));
@@ -65,47 +66,88 @@ public class Lifter {
     public void manualRun() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
-        SmartDashboard.putBoolean("DIO", dio.get());
+        SmartDashboard.putBoolean("DIO3", !dio.get());
 
         TrapezoidProfile.State state = new TrapezoidProfile.State(7, 10);
         TrapezoidProfile trap = new TrapezoidProfile(kThetaControllerConstraints, state);
 
-
-        if(!dio.get()) {
-            e.setPosition(0);
-            spark.set(0);
-        } else {
+        
+        
             while(SEPARATE_CONTROLS ? IO.isXPressed() : IO.getButton(12)) {
-                s_Pid.setReference(25, ControlType.kSmartMotion);
+                // s_Pid.setReference(25, ControlType.kSmartMotion);
+                // spark.set(.5);
             }
             if(SEPARATE_CONTROLS) {
-                if(e.getPosition() >= 126 && IO.getLiftControlLeftY() > 0) {
-                    spark.set(0);
-                } else {
-                    s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+                if(!dio.get()){
+                    e.setPosition(0);
                 }
-            } else {
-                if(IO.isPOVToAngle(-1)) {
-                    s_Pid.setReference(0, ControlType.kVoltage);
-                } else if (IO.isPOVToAngle(180)) {
-                    // spark.set(-0.75);
-                    s_Pid.setReference(-2, ControlType.kVoltage);
-                } else if (IO.isPOVToAngle(0)) {
-                    s_Pid.setReference(2, ControlType.kVoltage);
-                    // spark.set(0.75);
-                    if(e.getPosition() >= 114) {
+                if( IO.getLiftControlLeftY() > 0.5) {
+                    if(e.getPosition() >= 126){
                         spark.set(0);
+                    } else{
+                    // s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+                        spark.set(.3 *  IO.getLiftControlLeftY());
                     }
-                   
-                } else {
-                    s_Pid.setReference(0, ControlType.kVoltage);
+                    
+                } 
+                else if( IO.getLiftControlLeftY() < -0.5){
+                    if(dio.get()){
+                    // s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+                        spark.set(.3 *  IO.getLiftControlLeftY());
+                    }
                 }
+                else{
+                    spark.set(0);
+                }
+            }
+                
+            //     else {
+            //         if(!dio.get() && IO.getLiftControlLeftY() < 0){
+            //             spark.set(.5);
+            //         }
+            //         // s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+                    
+
+            //     }
+            // }
+        //  else if(!dio.get()) {
+        //     e.setPosition(0);
+        //     //spark.set(0);
+        // } else {
+        //     while(SEPARATE_CONTROLS ? IO.isXPressed() : IO.getButton(12)) {
+        //         s_Pid.setReference(25, ControlType.kSmartMotion);
+        //     }
+        //     if(SEPARATE_CONTROLS) {
+        //         if(e.getPosition() >= 126 && IO.getLiftControlLeftY() > 0) {
+        //             spark.set(0);
+        //         } else {
+
+        //             s_Pid.setReference(IO.getLiftControlLeftY() * kMaxVoltage, ControlType.kVoltage);
+        //         }
+        //     }
+        // }
+            // } else {
+            //     if(IO.isPOVToAngle(-1)) {
+            //         s_Pid.setReference(0, ControlType.kVoltage);
+            //     } else if (IO.isPOVToAngle(180)) {
+            //         // spark.set(-0.75);
+            //         s_Pid.setReference(-2, ControlType.kVoltage);
+            //     } else if (IO.isPOVToAngle(0)) {
+            //         s_Pid.setReference(2, ControlType.kVoltage);
+            //         // spark.set(0.75);
+            //         if(e.getPosition() >= 114) {
+            //             spark.set(0);
+            //         }
+                   
+            //     } else {
+            //         s_Pid.setReference(0, ControlType.kVoltage);
+            //     }
 
                 
-            }
+            // }
 
             
             
         }
     }
-}
+

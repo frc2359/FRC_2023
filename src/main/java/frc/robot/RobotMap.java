@@ -163,12 +163,12 @@ public interface RobotMap {
         public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
         
         // SPEED CONSTANTS ---------------------------------------------------------
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 3.5;  // 13.5?
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 8;  // 13.5?
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-                kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+                kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 7;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
     }

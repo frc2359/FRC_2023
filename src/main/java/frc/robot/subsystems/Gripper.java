@@ -42,10 +42,10 @@ public class Gripper {
                 gripMotor.set(ControlMode.PercentOutput, 0);
             break;
             case CASE_OPEN:
-                gripMotor.set(ControlMode.PercentOutput, 0.4);
+                gripMotor.set(ControlMode.PercentOutput, 0.6);
                 break;
             case CASE_CLOSED:
-                gripMotor.set(ControlMode.PercentOutput, -0.4);
+                gripMotor.set(ControlMode.PercentOutput, -0.6);
                 break;
         }
     }

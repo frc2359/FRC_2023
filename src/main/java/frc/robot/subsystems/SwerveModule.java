@@ -118,10 +118,11 @@ public class SwerveModule {
 		driveMotor.config_kD(AutoConstants.kSlotIdx, AutoConstants.kGains.kD, AutoConstants.kTimeoutMs);
 
 		/* Set acceleration and vcruise velocity - see documentation */
-		driveMotor.configMotionCruiseVelocity(15000, AutoConstants.kTimeoutMs);
-		driveMotor.configMotionAcceleration(6000, AutoConstants.kTimeoutMs);
+		driveMotor.configMotionCruiseVelocity(26000, AutoConstants.kTimeoutMs);
+		driveMotor.configMotionAcceleration(10000, AutoConstants.kTimeoutMs);
+        // 15000 vel, 6000 accel
 
-        driveMotor.configMotionSCurveStrength(5);
+        driveMotor.configMotionSCurveStrength(0);
 
 		/* Zero the sensor once on robot boot up */
 		driveMotor.setSelectedSensorPosition(0, AutoConstants.kPIDLoopIdx, AutoConstants.kTimeoutMs);

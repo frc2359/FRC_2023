@@ -22,6 +22,8 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
+    int autoMode = 1;
+
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
@@ -34,6 +36,7 @@ public class Robot extends TimedRobot {
         lift.init();
         gripper.init();
         extender.init();
+        SmartDashboard.putNumber("autoMode", autoMode);
     }
 
     /**
@@ -59,7 +62,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.runPath();
+        
+        // SmartDashboard.getNumber("autoMode", autoMode);
+        if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
+            m_autonomousCommand = m_robotContainer.runPath();
+        }
+       
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {

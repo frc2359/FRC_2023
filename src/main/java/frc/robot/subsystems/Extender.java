@@ -61,10 +61,10 @@ public class Extender {
                 extendMot.set(ControlMode.PercentOutput, 0);
                 break;
             case CASE_UP:
-                extendMot.set(ControlMode.PercentOutput, 0.5);
+                extendMot.set(ControlMode.PercentOutput, .5 * IO.getLiftControlRightX());
                 break;
             case CASE_DOWN:
-                extendMot.set(ControlMode.PercentOutput, -0.5);
+                extendMot.set(ControlMode.PercentOutput, .5 * IO.getLiftControlRightX());
                 break;
             case CASE_EXTEND_TO_DIST:
                 extendMot.set(ControlMode.Position, distance);
