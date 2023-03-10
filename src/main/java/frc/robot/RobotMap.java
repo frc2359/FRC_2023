@@ -174,7 +174,7 @@ public interface RobotMap {
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 4;
+        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 2;
         public static final double kMaxAngularSpeedRadiansPerSecond = //
                 DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
@@ -285,6 +285,8 @@ public interface RobotMap {
         public static final int CASE_UP = 1;
         public static final int CASE_DOWN = 2;
         public static final int CASE_EXTEND_TO_DIST = 3;
+        public static final int CASE_UP_SLOW = 4;
+        public static final int CASE_DOWN_SLOW = 5;
     }
 
 }

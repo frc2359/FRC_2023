@@ -63,6 +63,18 @@ public class Lifter {
         spark.getPIDController().setReference(setpoint, ControlType.kPosition);
     }
 
+    public void autoRun(double rot) {
+        SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
+        SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
+        SmartDashboard.putBoolean("DIO3", !dio.get());
+        if (e.getPosition() < rot - 5 || e.getPosition() > rot + 5) {
+            spark.set(0.2);
+        } else {
+            spark.set(0);
+        }
+
+    }
+
     public void manualRun() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
@@ -71,12 +83,6 @@ public class Lifter {
         TrapezoidProfile.State state = new TrapezoidProfile.State(7, 10);
         TrapezoidProfile trap = new TrapezoidProfile(kThetaControllerConstraints, state);
 
-        
-        
-            while(SEPARATE_CONTROLS ? IO.isXPressed() : IO.getButton(12)) {
-                // s_Pid.setReference(25, ControlType.kSmartMotion);
-                // spark.set(.5);
-            }
             if(SEPARATE_CONTROLS) {
                 if(!dio.get()){
                     e.setPosition(0);

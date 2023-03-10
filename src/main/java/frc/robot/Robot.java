@@ -64,21 +64,22 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         
         // SmartDashboard.getNumber("autoMode", autoMode);
-        if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
-            m_autonomousCommand = m_robotContainer.runPath();
-        }
+        // if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
+        //     m_autonomousCommand = m_robotContainer.runPath();
+        // }
        
 
-        // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.schedule();
-        }
+        // // schedule the autonomous command (example)
+        // if (m_autonomousCommand != null) {
+        //     m_autonomousCommand.schedule();
+        // }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-
+        // extender.extendToDistance(5);
+        // lift.autoRun(5);
     }
 
     @Override

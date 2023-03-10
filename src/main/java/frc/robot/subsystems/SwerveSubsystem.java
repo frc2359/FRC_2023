@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.IO;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
@@ -140,11 +141,16 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+    
+    public double convToSpeedMult() {
+        SmartDashboard.putNumber("Con", ((IO.getSpeedDial() + 1) * 0.5));
+        return (IO.getSpeedDial() + 1) * 0.5;
     }
 
 

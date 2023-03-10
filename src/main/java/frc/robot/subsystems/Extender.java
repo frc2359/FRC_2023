@@ -43,6 +43,10 @@ public class Extender {
         return extendMot.getSelectedSensorPosition() / 195.44;
     }
 
+    public double getRawDistance(double dist) {
+        return dist * 195.44;
+    }
+
     /**Case system that directly controls movement */
     public void extendEm() {
         SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
@@ -61,13 +65,21 @@ public class Extender {
                 extendMot.set(ControlMode.PercentOutput, 0);
                 break;
             case CASE_UP:
-                extendMot.set(ControlMode.PercentOutput, .5 * IO.getLiftControlRightX());
+                extendMot.set(ControlMode.PercentOutput, .75 * IO.getLiftControlRightX());
+                
+                break;
+            case CASE_UP_SLOW:
+                extendMot.set(ControlMode.PercentOutput, .4 * IO.getLiftControlRightX());
                 break;
             case CASE_DOWN:
-                extendMot.set(ControlMode.PercentOutput, .5 * IO.getLiftControlRightX());
+                extendMot.set(ControlMode.PercentOutput, .75 * IO.getLiftControlRightX());
+                
+                break;
+            case CASE_DOWN_SLOW:
+                extendMot.set(ControlMode.PercentOutput, .4 * IO.getLiftControlRightX());
                 break;
             case CASE_EXTEND_TO_DIST:
-                extendMot.set(ControlMode.Position, distance);
+                extendMot.set(ControlMode.Position, getRawDistance(distance));
                 break;
         }
     }
@@ -78,7 +90,11 @@ public class Extender {
 
         if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
             extendMot.set(ControlMode.PercentOutput, 0.5);
-            state = CASE_UP;
+            if(getDistanceInches() < 5) {
+                state = CASE_UP_SLOW;
+            } else {
+                state = CASE_UP;
+            }
         }
 
         if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() < -0.1 : IO.isPOVToAngle(270)){
@@ -86,7 +102,11 @@ public class Extender {
                 extendMot.set(ControlMode.PercentOutput, 0);
                 state = CASE_ZERO_ENCODERS;
             } else {
-                state = CASE_DOWN;
+                if(getDistanceInches() < 5) {
+                    state = CASE_DOWN_SLOW;
+                } else {
+                    state = CASE_DOWN;
+                }
             }
         } else {
             state = CASE_STOP;
@@ -94,4 +114,6 @@ public class Extender {
 
         
     }
+
+    
 }
