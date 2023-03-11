@@ -18,10 +18,14 @@ public class IO {
     public static boolean getButton(int btn) {
         return driver.getRawButtonPressed(btn);
     }
-    
+
+    public static double getRawAxis(int ax) {
+        return driver.getRawAxis(ax);
+    }
+
     /**Get the lower dial, values from -1 to 1 */
     public static double getSpeedDial() {
-        return driver.getRawAxis(4);
+        return driver.getRawAxis(3);
     }
 
     /**Checks Left Y Axis <b>FOR THE LIFT CONTROLLER</b> */

@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -140,7 +142,9 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.stop();
     }
 
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleStates
+    (SwerveModuleState[] desiredStates) {
+        
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
@@ -150,7 +154,8 @@ public class SwerveSubsystem extends SubsystemBase {
     
     public double convToSpeedMult() {
         SmartDashboard.putNumber("Con", ((IO.getSpeedDial() + 1) * 0.5));
-        return (IO.getSpeedDial() + 1) * 0.5;
+        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.5) < 0.2 ? ((IO.getSpeedDial() + 1) * 0.5) : 0.2;
+        return spdMultiplier;
     }
 
 

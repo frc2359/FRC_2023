@@ -35,8 +35,10 @@ public class Extender {
     }
 
     public void extendToDistance(double dist) {
+        
         this.distance = dist;
         this.state = CASE_EXTEND_TO_DIST;
+        extendEm();
     }
 
     public double getDistanceInches() {
@@ -79,7 +81,11 @@ public class Extender {
                 extendMot.set(ControlMode.PercentOutput, .4 * IO.getLiftControlRightX());
                 break;
             case CASE_EXTEND_TO_DIST:
-                extendMot.set(ControlMode.Position, getRawDistance(distance));
+                if(extendMot.getSelectedSensorPosition() >= distance) {
+                    extendMot.set(ControlMode.PercentOutput, 0);
+                } else {
+                    extendMot.set(ControlMode.PercentOutput, .3);
+                }
                 break;
         }
     }

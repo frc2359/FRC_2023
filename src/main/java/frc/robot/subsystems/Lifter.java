@@ -67,10 +67,10 @@ public class Lifter {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
         SmartDashboard.putBoolean("DIO3", !dio.get());
-        if (e.getPosition() < rot - 5 || e.getPosition() > rot + 5) {
-            spark.set(0.2);
-        } else {
+        if(e.getPosition() >= rot) {
             spark.set(0);
+        } else {
+            spark.set(0.3);
         }
 
     }
