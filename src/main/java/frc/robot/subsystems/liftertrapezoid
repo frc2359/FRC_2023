@@ -1,0 +1,14 @@
+import frc robot.subsystems.Lifter;
+
+
+private class liftertrapezoid extends TrapezoidProfileCommand{
+    
+    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State(1);
+    private TrapezoidProfile foobar = new TrapezoidProfile(kThetaControllerConstraints, m_setpoint);
+
+    private CANSparkMax spark = new CANSparkMax(LIFT_ID, MotorType.kBrushless);
+
+    m_setpoint = Lifter.setSmartMotionAccelStrategy
+
+    
+}

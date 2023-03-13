@@ -50,7 +50,7 @@ public class RobotContainer {
 
     public Command runPath() {
         final AutoPathCmd commad = new AutoPathCmd();
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("Blue 1", new PathConstraints(3, 2));
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(3, 2));
         return commad.followTrajectoryCommand(swerveSubsystem, examplePath, true);
     }
 

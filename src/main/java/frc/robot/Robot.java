@@ -78,8 +78,24 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        // extender.extendToDistance(5);
-        // lift.autoRun(5);
+        int num = 0;
+        boolean contnue = false;
+        switch(num) {
+            case 0:
+                contnue = extender.extendToDistance(5);
+                if(contnue) {
+                    contnue = false;
+                    num++;
+                }
+                break;
+            case 1:
+                contnue = lift.autoRun(5);
+                break;
+                
+
+        }
+        extender.extendToDistance(5);
+        lift.autoRun(5);
     }
 
     @Override

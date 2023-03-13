@@ -21,6 +21,7 @@ public class Extender {
     private static TalonSRX extendMot;
     private int state = 0;
     private double distance = 0;
+    private boolean autoCompleted = false;
 
     public void init() {
         extendMot = new TalonSRX(EXTEND_MOT_ID);
@@ -34,11 +35,12 @@ public class Extender {
         this.state = st;
     }
 
-    public void extendToDistance(double dist) {
+    public boolean extendToDistance(double dist) {
         
         this.distance = dist;
         this.state = CASE_EXTEND_TO_DIST;
         extendEm();
+        return autoCompleted;
     }
 
     public double getDistanceInches() {
@@ -83,6 +85,7 @@ public class Extender {
             case CASE_EXTEND_TO_DIST:
                 if(extendMot.getSelectedSensorPosition() >= distance) {
                     extendMot.set(ControlMode.PercentOutput, 0);
+                    autoCompleted = true;
                 } else {
                     extendMot.set(ControlMode.PercentOutput, .3);
                 }

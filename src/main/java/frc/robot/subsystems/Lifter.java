@@ -8,8 +8,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.IO;
 
 import static frc.robot.RobotMap.*;
@@ -25,7 +27,7 @@ public class Lifter {
     private DigitalInput dio = new DigitalInput(LIFT_LIMIT);
 
     //Set PID constants
-    double kP = 0.2;
+    double kP = 0.0;
     double kI = 0;
     double kD = 0;
     double kIz = 0;
@@ -33,16 +35,14 @@ public class Lifter {
     double kMaxOutput = 1;
     double kMinOutput = -1;
 
-    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
-    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
-    private static int states = 0; 
+
 
     public void init() {
         e.setPositionConversionFactor((1/(5*5*4*4)));
         s_Pid = spark.getPIDController();
-        s_Pid.setSmartMotionMaxAccel(kMaxAngularAccelerationRadiansPerSecondSquared, 0);
-        s_Pid.setSmartMotionMaxVelocity(kMaxAngularSpeedRadiansPerSecond, 0);
-        s_Pid.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+        s_Pid.setSmartMotionMaxAccel(kMaxAngularAccelerationRadiansPerSecondSquared, LIFT_ID);
+        s_Pid.setSmartMotionMaxVelocity(kMaxAngularSpeedRadiansPerSecond, LIFT_ID);
+        s_Pid.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, LIFT_ID);
 
         s_Pid.setP(kP);
         s_Pid.setI(kI);
@@ -63,14 +63,16 @@ public class Lifter {
         spark.getPIDController().setReference(setpoint, ControlType.kPosition);
     }
 
-    public void autoRun(double rot) {
+    public boolean autoRun(double rot) {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
         SmartDashboard.putBoolean("DIO3", !dio.get());
         if(e.getPosition() >= rot) {
             spark.set(0);
+            return true;
         } else {
             spark.set(0.3);
+            return false;
         }
 
     }
