@@ -1,10 +1,12 @@
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.controller.PIDController;
@@ -44,14 +46,38 @@ public class RobotContainer {
         //configureButtonBindings();
     }
 
-    //private void configureButtonBindings() {
-    //    new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
-    //}
+    public SwerveSubsystem getSwerveSubsystem() {
+        return swerveSubsystem;
+    }
 
-    public Command runPath() {
-        final AutoPathCmd commad = new AutoPathCmd();
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(3, 2));
-        return commad.followTrajectoryCommand(swerveSubsystem, examplePath, true);
+    /**Runs inputted path from the helper application "Path Planner (from Microsoft Store)
+     * @param pathName is the name of the path set in PathPlanner
+     * @param maxV is the velocity on the path
+     * @param maxAccel is the acceleration of the path
+     * @return the command for the path the follow */
+    public Command runPath(String pathName, int maxV, int maxAccel) {
+        final AutoPathCmd command = new AutoPathCmd();
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
+        return command.followTrajectoryCommand(swerveSubsystem, examplePath, true);
+    }
+
+    /**Runs inputted path (that includes events) from the helper application "Path Planner (from Microsoft Store)
+     * @param pathName is the name of the path set in PathPlanner
+     * @param maxV is the velocity on the path
+     * @param maxAccel is the acceleration of the path
+     * @param events is a Hash Map of events that are to be run (in the format ("Key", event()))
+     * @return the command for the path the follow */
+    public Command runPathWithEvents(String pathName, int maxV, int maxAccel, HashMap<String, Command> events) {
+        // final AutoPathCmd command = new AutoPathCmd();
+
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
+        
+        FollowPathWithEvents command = new FollowPathWithEvents(
+                runPath(pathName, maxV, maxAccel), examplePath.getMarkers(), events
+                );
+
+        return command;
+        // return command.followTrajectoryCommand(swerveSubsystem, examplePath, true);
     }
 
     public Command getAutonomousCommand() {

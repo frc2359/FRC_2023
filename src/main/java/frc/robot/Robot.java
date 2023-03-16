@@ -1,8 +1,12 @@
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoPathCmd;
+import frc.robot.commands.LifterCommands;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Lifter;
@@ -16,6 +20,9 @@ public class Robot extends TimedRobot {
     private Lifter lift;
     private Gripper gripper;
     private Extender extender;
+
+    private LifterCommands lifterCommands = new LifterCommands();
+    private AutoPathCmd apc = new AutoPathCmd();
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -65,7 +72,12 @@ public class Robot extends TimedRobot {
         
         // SmartDashboard.getNumber("autoMode", autoMode);
         if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
-            m_autonomousCommand = m_robotContainer.runPath();
+            m_autonomousCommand = m_robotContainer.runPath("New Path", 3, 2);
+        } else if (SmartDashboard.getNumber("autoMode", autoMode) == 2) {
+            HashMap<String, Command> events = new HashMap<>();
+            events.put("putDownCone", lifterCommands.runLiftExtend(lift, extender));
+            events.put("balance", apc.balance(m_robotContainer.getSwerveSubsystem()));
+            m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", 3, 2, events);
         }
        
 
@@ -78,24 +90,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        int num = 0;
-        boolean contnue = false;
-        switch(num) {
-            case 0:
-                contnue = extender.extendToDistance(5);
-                if(contnue) {
-                    contnue = false;
-                    num++;
-                }
-                break;
-            case 1:
-                contnue = lift.autoRun(5);
-                break;
-                
-
-        }
-        extender.extendToDistance(5);
-        lift.autoRun(5);
+        
     }
 
     @Override
