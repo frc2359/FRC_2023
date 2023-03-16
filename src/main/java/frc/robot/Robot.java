@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand = m_robotContainer.runPath("New Path", 3, 2);
         } else if (SmartDashboard.getNumber("autoMode", autoMode) == 2) {
             HashMap<String, Command> events = new HashMap<>();
-            events.put("putDownCone", lifterCommands.runLiftExtend(lift, extender));
+            events.put("putDownCone", lifterCommands.runLiftExtend(lift, extender,5, 5));
             events.put("balance", apc.balance(m_robotContainer.getSwerveSubsystem()));
             m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", 3, 2, events);
         }

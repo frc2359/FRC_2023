@@ -7,27 +7,32 @@ import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Lifter;
 
 public class LifterCommands  extends SequentialCommandGroup {
-    public Command runLiftExtend(Lifter lift, Extender extender) {
+    
+    /**Extend the extender, then run the lifter to the desired locations
+     * @param lift is the lifter object being targeted
+     * @param extender is the extender object being targeted
+     * @param extenderDist is the desired distance to extend
+     * @param liftDistance is the desired rotation of the lifter
+     */
+    public Command runLiftExtend(Lifter lift, Extender extender, int extenderDist, int liftDistance) {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
                 int num = 0;
                 boolean contnue = false;
                 switch(num) {
                     case 0:
-                        contnue = extender.extendToDistance(5);
+                        contnue = extender.extendToDistance(extenderDist);
                         if(contnue) {
                             contnue = false;
                             num++;
                         }
                         break;
                     case 1:
-                        contnue = lift.autoRun(5);
+                        contnue = lift.autoRun(liftDistance);
                         break;
                         
 
                 }
-                extender.extendToDistance(5);
-                lift.autoRun(5);
             })
         );
     }
