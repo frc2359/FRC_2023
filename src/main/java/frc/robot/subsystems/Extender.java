@@ -20,6 +20,9 @@ import static frc.robot.RobotMap.ExtenderConstants.*;
 public class Extender {
     private static TalonSRX extendMot;
     private int state = 0;
+    private int stateExtender = -1;
+    private double spdExtender = 0;
+    private double userControl = 0;
     private double distance = 0;
     private boolean autoCompleted = false;
 
@@ -59,8 +62,6 @@ public class Extender {
         SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
         SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
 
-        
-
         switch(state) {
             case CASE_ZERO_ENCODERS:
                 extendMot.setSelectedSensorPosition(0);
@@ -91,6 +92,76 @@ public class Extender {
                 }
                 break;
         }
+    }
+
+        /**Case system that directly controls movement */
+        public void runExtender() {
+            SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
+            SmartDashboard.putNumber("Extender Inches", getDistanceInches());
+            SmartDashboard.putNumber("Extender Case", state);
+            SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
+            SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
+             
+            spdExtender = 0;
+            userControl = IO.getLiftControlRightX();    // add deadband?
+            switch(stateExtender) {
+                case STATE_EXT_UNKNOWN:
+                    spdExtender = -.1;      // retract until limit switch is reached
+                    if(isHome()) {
+                        spdExtender = 0;
+                        setEncoderHome();
+                        state = STATE_EXT_STOP;
+                    }
+                    break; 
+                 case STATE_EXT_STOP:
+                    spdExtender = 0;
+                    break;
+                case STATE_EXT_EXTEND:
+                    if (getDistanceInches() >= EXTENDER_MAX_DISTANCE) {
+                        spdExtender = 0;
+                        state = STATE_EXT_STOP;
+                    } else if (getDistanceInches() > EXTENDER_MAX_DISTANCE - EXTENDER_SLOW_DISTANCE) {
+                        spdExtender = EXTENDER_SLOW_SPEED * userControl;
+                    } else {
+                        spdExtender = EXTENDER_FAST_SPEED * userControl;
+                    }
+                    break;
+                case STATE_EXT_RETRACT:
+                    if (isHome() || getDistanceInches() <= 0) {
+                        spdExtender = 0;
+                        state = STATE_EXT_STOP;
+                    } else if (getDistanceInches() < EXTENDER_SLOW_DISTANCE) {
+                        spdExtender = EXTENDER_SLOW_SPEED * userControl;
+                    } else {
+                        spdExtender = EXTENDER_FAST_SPEED * userControl;
+                    }
+                    break;
+                /*
+                case CASE_EXTEND_TO_DIST:
+                    if(extendMot.getSelectedSensorPosition() >= distance) {
+                        extendMot.set(ControlMode.PercentOutput, 0);
+                        autoCompleted = true;
+                    } else {
+                        extendMot.set(ControlMode.PercentOutput, .3);
+                    }
+                    break;
+                */
+            }
+            extendMot.set(ControlMode.PercentOutput, spdExtender);
+        }
+    
+    /* Checks if home limit switch enabled */
+    public boolean isHome() {
+        if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /* reset encoder */
+    public void setEncoderHome() {
+        extendMot.setSelectedSensorPosition(0);
     }
 
     /**Runs the system manually. Control via joystick */

@@ -287,6 +287,18 @@ public interface RobotMap {
         public static final int CASE_EXTEND_TO_DIST = 3;
         public static final int CASE_UP_SLOW = 4;
         public static final int CASE_DOWN_SLOW = 5;
+
+        /* ------------------------- EXTENDER STATES -------------------------------- */
+        public static final int STATE_EXT_UNKNOWN = -1;
+        public static final int STATE_EXT_STOP = 0;
+        public static final int STATE_EXT_EXTEND = 1;
+        public static final int STATE_EXT_RETRACT = 2;
+
+        /* ------------------------- EXTENDER CONSTANTS ----------------------------- */
+        public static final double EXTENDER_MAX_DISTANCE = 18.5;   // 18.5 inches
+        public static final double EXTENDER_SLOW_DISTANCE = 5.0;     // 5 inches
+        public static final double EXTENDER_FAST_SPEED = 0.75;
+        public static final double EXTENDER_SLOW_SPEED = 0.4;
     }
 
 }
