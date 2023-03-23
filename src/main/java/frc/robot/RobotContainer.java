@@ -69,6 +69,7 @@ public class RobotContainer {
      * @return the command for the path the follow */
     public Command runPathWithEvents(String pathName, int maxV, int maxAccel, HashMap<String, Command> events) {
         // final AutoPathCmd command = new AutoPathCmd();
+        System.out.println("good");
 
         PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
         
@@ -79,13 +80,14 @@ public class RobotContainer {
         return command;
         // return command.followTrajectoryCommand(swerveSubsystem, examplePath, true);
     }
+    
 
     public Command getAutonomousCommand() {
         // 1. Create trajectory settings
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                        .setKinematics(DriveConstants.kDriveKinematics);
+                DriveConstants.kTeleDriveMaxSpeedMetersPerSecond, 
+                DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+        trajectoryConfig.setKinematics(DriveConstants.kDriveKinematics);
 
         // 2. Generate trajectory
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(

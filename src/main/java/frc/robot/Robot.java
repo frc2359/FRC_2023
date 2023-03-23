@@ -72,11 +72,11 @@ public class Robot extends TimedRobot {
         
         // SmartDashboard.getNumber("autoMode", autoMode);
         if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
-            m_autonomousCommand = m_robotContainer.runPath("New Path", 3, 2);
+            m_autonomousCommand = lifterCommands.runLiftExtend(lift, extender, 2, 2).andThen(m_robotContainer.runPath("New Path", 8, 7));
         } else if (SmartDashboard.getNumber("autoMode", autoMode) == 2) {
             HashMap<String, Command> events = new HashMap<>();
-            events.put("putDownCone", lifterCommands.runLiftExtend(lift, extender,5, 5));
-            events.put("balance", apc.balance(m_robotContainer.getSwerveSubsystem()));
+            events.put("putDownCone", lifterCommands.print("we good?"));
+            events.put("balance", lifterCommands.print("no but like actually?"));
             m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", 3, 2, events);
         }
        
@@ -90,7 +90,8 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        
+
+           
     }
 
     @Override
@@ -102,6 +103,8 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         countLoop = 0;
+
+        extender.setExtUnknown();
         
     }
 
@@ -112,7 +115,10 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         lift.manualRun();
         gripper.manualRun();
-        extender.manualRun();
+        extender.runExtender();
+        if(IO.getButton(12)) {
+            extender.setToDistance(10);
+        }
     }
 
     @Override

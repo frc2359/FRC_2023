@@ -22,6 +22,7 @@ public class Extender {
     private int state = 0;
     private int stateExtender = -1;
     private double spdExtender = 0;
+    private double targetDistanceInches = 0;
     private double userControl = 0;
     private double distance = 0;
     private boolean autoCompleted = false;
@@ -42,7 +43,7 @@ public class Extender {
         
         this.distance = dist;
         this.state = CASE_EXTEND_TO_DIST;
-        extendEm();
+        // extendEm();
         return autoCompleted;
     }
 
@@ -54,7 +55,7 @@ public class Extender {
         return dist * 195.44;
     }
 
-    /**Case system that directly controls movement */
+    /** <i><b>DEPRECIATED</b></i> Case system that directly controls movement */
     public void extendEm() {
         SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
         SmartDashboard.putNumber("Extender Inches", getDistanceInches());
@@ -94,6 +95,11 @@ public class Extender {
         }
     }
 
+        /* TEMP */
+        public void setExtUnknown() {
+            stateExtender = STATE_EXT_UNKNOWN;
+        }
+
         /**Case system that directly controls movement */
         public void runExtender() {
             SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
@@ -101,20 +107,30 @@ public class Extender {
             SmartDashboard.putNumber("Extender Case", state);
             SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
             SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
-             
+            
             spdExtender = 0;
-            userControl = IO.getLiftControlRightX();    // add deadband?
+            userControl = IO.getLiftControlRightX();
+            if (Math.abs(userControl) < 0.05) { userControl = 0.0; }    // deadband
+            SmartDashboard.putNumber("UserCtrl",userControl);
+            SmartDashboard.putNumber("spdExt",spdExtender);
+            SmartDashboard.putNumber("extState",stateExtender);
+            SmartDashboard.putBoolean("isHome?", isHome());
             switch(stateExtender) {
                 case STATE_EXT_UNKNOWN:
-                    spdExtender = -.1;      // retract until limit switch is reached
+                    spdExtender = -.25;      // retract until limit switch is reached
                     if(isHome()) {
                         spdExtender = 0;
                         setEncoderHome();
-                        state = STATE_EXT_STOP;
+                        stateExtender = STATE_EXT_STOP;
                     }
                     break; 
                  case STATE_EXT_STOP:
                     spdExtender = 0;
+                    if (userControl > 0) {
+                        stateExtender = STATE_EXT_EXTEND;
+                    } else if (userControl < 0) {
+                        stateExtender = STATE_EXT_RETRACT;
+                    } else { stateExtender = STATE_EXT_STOP;}
                     break;
                 case STATE_EXT_EXTEND:
                     if (getDistanceInches() >= EXTENDER_MAX_DISTANCE) {
@@ -125,6 +141,11 @@ public class Extender {
                     } else {
                         spdExtender = EXTENDER_FAST_SPEED * userControl;
                     }
+                    if (userControl > 0) {
+                        stateExtender = STATE_EXT_EXTEND;
+                    } else if (userControl < 0) {
+                        stateExtender = STATE_EXT_RETRACT;
+                    } else { stateExtender = STATE_EXT_STOP;}
                     break;
                 case STATE_EXT_RETRACT:
                     if (isHome() || getDistanceInches() <= 0) {
@@ -134,6 +155,27 @@ public class Extender {
                         spdExtender = EXTENDER_SLOW_SPEED * userControl;
                     } else {
                         spdExtender = EXTENDER_FAST_SPEED * userControl;
+                    }
+                    if (userControl > 0) {
+                        stateExtender = STATE_EXT_EXTEND;
+                    } else if (userControl < 0) {
+                        stateExtender = STATE_EXT_RETRACT;
+                    } else { stateExtender = STATE_EXT_STOP;}
+                    break;
+                case STATE_EXT_MOVE_TO_POS:
+                    double pos = getDistanceInches();
+                    if (Math.abs(pos - targetDistanceInches) < 0.05 || userControl != 0.0) {
+                        spdExtender = 0.0;
+                        stateExtender = STATE_EXT_STOP;
+                        break;
+                    }
+                    if (Math.abs(pos - targetDistanceInches) > EXTENDER_SLOW_DISTANCE) {
+                        spdExtender = EXTENDER_FAST_SPEED;
+                    } else {
+                        spdExtender = EXTENDER_SLOW_SPEED;
+                    }
+                    if (targetDistanceInches < pos) {
+                        spdExtender *= -1.0;
                     }
                     break;
                 /*
@@ -149,7 +191,15 @@ public class Extender {
             }
             extendMot.set(ControlMode.PercentOutput, spdExtender);
         }
-    
+
+    /* Move Extender to Pos */
+    public void setToDistance(double dist) {
+        if (dist < 0.0) { dist = 0;}
+        if (dist > EXTENDER_MAX_DISTANCE) { dist = EXTENDER_MAX_DISTANCE;}
+        targetDistanceInches = dist;
+        if (stateExtender != STATE_EXT_UNKNOWN) { stateExtender = STATE_EXT_MOVE_TO_POS; }
+    }
+
     /* Checks if home limit switch enabled */
     public boolean isHome() {
         if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
@@ -167,6 +217,11 @@ public class Extender {
     /**Runs the system manually. Control via joystick */
     public void manualRun() {
         extendEm();
+
+        if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
+            extendMot.set(ControlMode.PercentOutput, 0);
+            state = CASE_ZERO_ENCODERS;
+        }
 
         if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
             extendMot.set(ControlMode.PercentOutput, 0.5);

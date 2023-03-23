@@ -252,18 +252,32 @@ public interface RobotMap {
     }
 
     public static final class LifterConstants {
+        public static final double kRampRateSec = 1;
+
         public static final double kMaxVoltage = 2;
         public static final double kMaxAngularSpeedRadiansPerSecond = 1.2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 1.2;
+
+        public static final double kMaxMultiplier = 0.3;
+
         public static final int LIFT_ID = 10;
         public static final int EXTEND_ID = 11;
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 3;
 
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-                new TrapezoidProfile.Constraints(
-                        kMaxAngularSpeedRadiansPerSecond,
-                        kMaxAngularAccelerationRadiansPerSecondSquared);
+        public static final int LIFTER_MAX_ROTATION = 126;
+
+        public static final int STATE_LIFT_UNKOWN = -1;
+        public static final int STATE_LIFT_STOP = 0;
+        public static final int STATE_LIFT_ZERO_ENCODERS = 1;
+        public static final int STATE_LIFT_UP = 2;
+        public static final int STATE_LIFT_DOWN = 3;
+        public static final int STATE_LIFT__MOVE_TO_POS = 4;
+
+        // public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        //         new TrapezoidProfile.Constraints(
+        //                 kMaxAngularSpeedRadiansPerSecond,
+        //                 kMaxAngularAccelerationRadiansPerSecondSquared);
     }
 
     public static final class ClawConstants {
@@ -293,12 +307,13 @@ public interface RobotMap {
         public static final int STATE_EXT_STOP = 0;
         public static final int STATE_EXT_EXTEND = 1;
         public static final int STATE_EXT_RETRACT = 2;
+        public static final int STATE_EXT_MOVE_TO_POS = 9;
 
         /* ------------------------- EXTENDER CONSTANTS ----------------------------- */
         public static final double EXTENDER_MAX_DISTANCE = 18.5;   // 18.5 inches
-        public static final double EXTENDER_SLOW_DISTANCE = 5.0;     // 5 inches
-        public static final double EXTENDER_FAST_SPEED = 0.75;
-        public static final double EXTENDER_SLOW_SPEED = 0.4;
+        public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
+        public static final double EXTENDER_FAST_SPEED = 1;
+        public static final double EXTENDER_SLOW_SPEED = 0.25;
     }
 
 }

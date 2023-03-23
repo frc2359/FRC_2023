@@ -83,17 +83,6 @@ public class Gripper {
                 state = CASE_CLOSED;
             }
         }
-
-        
-
-        if(state == CASE_CLOSED && gripMotor.getSensorCollection().isRevLimitSwitchClosed()) {
-            gripMotor.set(ControlMode.PercentOutput, 0);
-        }
-
-        if(state == CASE_OPEN && gripMotor.getSensorCollection().isFwdLimitSwitchClosed()) {
-            gripMotor.set(ControlMode.PercentOutput, 0);
-        }
-
     }
 }
 
