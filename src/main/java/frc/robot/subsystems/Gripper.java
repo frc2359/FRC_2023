@@ -1,88 +1,104 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.math.controller.PIDController;
+import frc.robot.IO;
 
 import static frc.robot.RobotMap.*;
 import static frc.robot.RobotMap.ClawConstants.*;
-import frc.robot.IO;
-
 
 public class Gripper {
     
+    private static TalonSRX gripMotorLeft;
+    private static TalonSRX gripMotorRight;
 
-    private static TalonSRX gripMotor = new TalonSRX(CLAW_MOT_ID);
-    private int state = 0;
+    private final ControlMode PO = ControlMode.PercentOutput;
 
+    public int state = 0;
 
+    /**Initialize the gripper */
     public void init() {
-        gripMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-        gripMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        gripMotorLeft = new TalonSRX(CLAW_LEFT_MOT_ID);
+        gripMotorRight = new TalonSRX(CLAW_RIGHT_MOT_ID);
+
+        gripMotorLeft.follow(gripMotorRight);
+        gripMotorRight.setInverted(InvertType.OpposeMaster);
     }
 
-    public void switchState(int st) {
+    /**<b>NEEDS INITIALIZATION</b> -- Returns true if an object is in the gripper */
+    public boolean lineTripped() {
+        //rumble
+        return false;
+    }
+
+    public void setState(int st) {
         this.state = st;
     }
 
-    public void gripEm() {
-        switch(state){
+    public void run() {
+        double setpoint = 0;
+        switch(state) {
             case CASE_STOP:
-                gripMotor.set(ControlMode.PercentOutput, 0);
-            break;
-            case CASE_OPEN:
-                gripMotor.set(ControlMode.PercentOutput, 0.6);
+                setpoint = 0;
                 break;
-            case CASE_CLOSED:
-                gripMotor.set(ControlMode.PercentOutput, -0.6);
+            case CASE_INTAKE:
+                setpoint = -0.3;
                 break;
+            case CASE_POWERED_HOLD:
+                setpoint = -0.1;
+                break;
+            case CASE_EXPEL_CUBE_HIGH:
+                setpoint = 1;
+                break;
+            case CASE_EXPEL_CUBE_MID:
+                setpoint = 0.5;
+                break;
+            case CASE_EXPEL_CUBE_LOW:
+                setpoint = 0.3;
+                break;
+            case CASE_EXPEL_CONE:
+                setpoint = 0.4;
+                break;
+        }
+        gripMotorRight.set(PO, setpoint);
+    }
+
+    /**Manual Control of the gripper.
+     * <ul>
+     * <li><b>A</b>: Intake
+     * <li><b>X</b>: Expel Cube Selector
+     * <ul>
+     * <li><b>Y</b>: High
+     * <li><b>B</b>: Middle
+     * <li><b>A</b>: Low
+     * </ul>
+     * <li><b>Y</b>: Expel Cone
+     * </ul>
+     */
+    public void manualControl() {
+        if (IO.isAPressed()) {  this.state = CASE_INTAKE;  } //intake
+        
+        else if (IO.isXPressed()) { //cube expel selector
+            if(IO.isYPressed()) { this.state = CASE_EXPEL_CUBE_HIGH; }
+            else if(IO.isBPressed()) { this.state = CASE_EXPEL_CUBE_MID; }
+            else if(IO.isAPressed()) { this.state = CASE_EXPEL_CUBE_LOW; }
+        } else if (IO.isYPressed()) {  this.state = CASE_EXPEL_CONE;  } //expel cone
+          else if (IO.isBPressed()) {  this.state = CASE_STOP;  } // stop motor
+
+        if (this.state == CASE_INTAKE && lineTripped()) {
+            this.state = CASE_POWERED_HOLD;
         }
     }
 
-    public void manualRun() {
-        gripEm();
-        //reverse = open
-        SmartDashboard.putBoolean("Gripper Reverse", gripMotor.getSensorCollection().isRevLimitSwitchClosed());
-        SmartDashboard.putBoolean("Gripper Forward", gripMotor.getSensorCollection().isFwdLimitSwitchClosed());
 
-        if(state == CASE_OPEN) {
-            SmartDashboard.putBoolean("Gripper Opened", true);
-        } else if (state == CASE_CLOSED) {
-            SmartDashboard.putBoolean("Gripper Opened", false);
-        }
+    //expel cube
 
-        if(SEPARATE_CONTROLS) {
-            if(IO.isAPressed()) {
-                state = CASE_CLOSED;
-            } else if (IO.isYPressed()) {
-                state = CASE_OPEN;
-            } else if(IO.isBPressed()) {
-                state = CASE_STOP;
-            }
-        } else {
-            if(IO.getButton(10)){
-                state = CASE_STOP;
-            }
-    
-            if(IO.getButton(3)){
-                state = CASE_OPEN;
-            }
-    
-            if(IO.getButton(4)){
-                state = CASE_CLOSED;
-            }
-        }
-    }
+    //expelMid cube
+
+    //expelHigh cube
+
+    //expel Cone
+
 }
-

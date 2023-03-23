@@ -282,12 +282,25 @@ public interface RobotMap {
 
     public static final class ClawConstants {
         public static final int CLAW_MOT_ID = 12;
+
+        public static final int CLAW_LEFT_MOT_ID = 12;
+        public static final int CLAW_RIGHT_MOT_ID = 13;
         
+
+        /* -------------------------------- OLD CASES ------------------------------- */
+        // public static final int CASE_STOP = 0;
+        // public static final int CASE_OPEN = 1;
+        // public static final int CASE_CLOSED = 2;
 
         /* ---------------------------------- CASES --------------------------------- */
         public static final int CASE_STOP = 0;
-        public static final int CASE_OPEN = 1;
-        public static final int CASE_CLOSED = 2;
+        public static final int CASE_INTAKE = 1;
+        public static final int CASE_POWERED_HOLD = 2;
+        public static final int CASE_EXPEL_CUBE_LOW = 3;
+        public static final int CASE_EXPEL_CUBE_MID = 4;
+        public static final int CASE_EXPEL_CUBE_HIGH = 5;
+        public static final int CASE_EXPEL_CONE = 6;
+
     }
 
     public static final class ExtenderConstants {
