@@ -304,7 +304,7 @@ public interface RobotMap {
     }
 
     public static final class ExtenderConstants {
-        public static final int EXTEND_MOT_ID = 13;
+        public static final int EXTEND_MOT_ID = 14;
 
         /* ---------------------------------- CASES --------------------------------- */
         public static final int CASE_ZERO_ENCODERS = -1;
