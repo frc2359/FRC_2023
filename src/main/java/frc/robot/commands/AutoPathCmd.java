@@ -15,11 +15,6 @@ import frc.robot.RobotMap.DriveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class AutoPathCmd extends SequentialCommandGroup {
-    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-    // private final ADXRS450_Gyro gyroNew = new ADXRS450_Gyro();
-    
-
-    // double pitchAngleDegrees    = gyro.getPitch();
     private final String kinematics = null;
 
     SwerveSubsystem swerveSubsystem;
