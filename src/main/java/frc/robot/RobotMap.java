@@ -13,28 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public interface RobotMap {
 
     /* ---------------------------------- IO & HANDLING --------------------------------- */
-    public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
-    public static final int LIFT_PORT = 1;
-
-    public static final boolean SEPARATE_CONTROLS = true;
-
-    public static final double TURN_SPEED_MULT = 1;
-    public static final double DRIVE_SPEED_MULT = 1;
-
-    public static final boolean BRAKE_MODE_DRIVE = true;
-
-
-
-    /* -------------------------------------------------------------------------- */
-    /*                                   GRIPPER                                  */
-    /* -------------------------------------------------------------------------- */
-
-    /* ---------------------------- GRIPPER MOTOR ID ---------------------------- */
-    public static final int GRIPPER_0 = 8;
-    public static final int GRIPPER_1 = 9;
-    public static final int GRIPPER_2 = 10;
-
-    
+       
 
     /* -------------------------------------------------------------------------- */
     /*                                 BASIC DRIVE                                */
@@ -50,7 +29,6 @@ public interface RobotMap {
     /*                                SWERVE DRIVE                                */
     /* -------------------------------------------------------------------------- */
 
-    public static final GearRatio SWERVE_GEAR_RATIO = Mk4iSwerveModuleHelper.GearRatio.L1;
 
     /* --------------------------- SWERVE MOTOR ID --------------------------- */
     public static final int FRONT_LEFT_DRIVE = 1;
@@ -68,19 +46,11 @@ public interface RobotMap {
     public static final int BACK_LEFT_ENC = 3;
     public static final int BACK_RIGHT_ENC = 4;
 
-    /* -------------------------- SWERVE STEER OFFSETS -------------------------- */
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(362);
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(-145);
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(125);
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(-90);
-
-    /* ----------------------------- DRIVE CONSTANTS ---------------------------- */
-    public static final int DRIVE_TICKS_TO_ROTATION = 1250;
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 24.0; // front left to front right
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 25.3;  // front left to back left
-
 
     public static final class ModuleConstants {
+        public static final GearRatio SWERVE_GEAR_RATIO = Mk4iSwerveModuleHelper.GearRatio.L1; //OLD
+
+
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
         public static final double kDriveMotorGearRatio =  (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);  // check
         public static final double kTurningMotorGearRatio = (14.0 / 50.0) * (10.0 / 60.0);  // check
@@ -93,6 +63,7 @@ public interface RobotMap {
     }
 
     public static final class DriveConstants {
+        public static final boolean BRAKE_MODE_DRIVE = true; 
         /* -------------------------------------------------------------------------- */
         /*                             PHYSICAL CONSTANTS                             */
         /* -------------------------------------------------------------------------- */
@@ -109,15 +80,6 @@ public interface RobotMap {
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),     // front left
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // rear right
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));   // rear left
-        
-        /*
-        //Set FR as center
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(0, 0),    // front right
-            new Translation2d(0, -kTrackWidth),     // front left
-            new Translation2d(-kWheelBase, kTrackWidth),   // rear right
-            new Translation2d(-kWheelBase, -kTrackWidth));   // rear left
-        */
     
         /* -------------------------------------------------------------------------- */
         /*                            DRIVETRAIN CONSTANTS                            */
@@ -241,14 +203,24 @@ public interface RobotMap {
     }
 
     public static final class OIConstants {
-        public static final int kDriverControllerPort = 0;
+        public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
+        public static final int LIFT_PORT = 1;
 
-        public static final int kDriverYAxis = 1;
-        public static final int kDriverXAxis = 0;
-        public static final int kDriverRotAxis = 2;
-        public static final int kDriverFieldOrientedButtonIdx = 1;
+        public static final boolean SEPARATE_CONTROLS = true;
 
-        public static final double kDeadband = 0.2;
+        public static final double TURN_SPEED_MULT = 1;
+        public static final double DRIVE_SPEED_MULT = 1;
+
+        public static final double kDriverDeadband = 0.2;
+
+
+        // public static final int kDriverControllerPort = 0;
+
+        // public static final int kDriverYAxis = 1;
+        // public static final int kDriverXAxis = 0;
+        // public static final int kDriverRotAxis = 2;
+        // public static final int kDriverFieldOrientedButtonIdx = 1;
+
     }
 
     public static final class LifterConstants {
@@ -323,7 +295,7 @@ public interface RobotMap {
         public static final int STATE_EXT_MOVE_TO_POS = 9;
 
         /* ------------------------- EXTENDER CONSTANTS ----------------------------- */
-        public static final double EXTENDER_MAX_DISTANCE = 18.5;   // 18.5 inches
+        public static final double EXTENDER_MAX_DISTANCE = 17.4;   // 18.5 inches
         public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
         public static final double EXTENDER_FAST_SPEED = 1;
         public static final double EXTENDER_SLOW_SPEED = 0.25;

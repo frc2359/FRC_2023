@@ -223,7 +223,7 @@ public class Extender {
             state = CASE_ZERO_ENCODERS;
         }
 
-        if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
+        if(OIConstants.SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
             extendMot.set(ControlMode.PercentOutput, 0.5);
             if(getDistanceInches() < 5) {
                 state = CASE_UP_SLOW;
@@ -232,7 +232,7 @@ public class Extender {
             }
         }
 
-        if(SEPARATE_CONTROLS ? IO.getLiftControlRightX() < -0.1 : IO.isPOVToAngle(270)){
+        if(OIConstants.SEPARATE_CONTROLS ? IO.getLiftControlRightX() < -0.1 : IO.isPOVToAngle(270)){
             if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
                 extendMot.set(ControlMode.PercentOutput, 0);
                 state = CASE_ZERO_ENCODERS;

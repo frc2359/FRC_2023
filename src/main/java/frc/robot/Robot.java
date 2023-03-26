@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -10,6 +12,7 @@ import frc.robot.commands.LifterCommands;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Lifter;
+import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
@@ -24,12 +27,14 @@ public class Robot extends TimedRobot {
     private LifterCommands lifterCommands = new LifterCommands();
     private AutoPathCmd apc = new AutoPathCmd();
 
+    private PowerDistribution pdh = new PowerDistribution();
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any
      * initialization code.
      */
-    int autoMode = 1;
+    int autoMode = 2;
 
     @Override
     public void robotInit() {
@@ -61,6 +66,9 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         // Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already-scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        SmartDashboard.putNumber("PDH", (pdh.getVoltage()));
+        SmartDashboard.putBoolean("Battery Good", (pdh.getVoltage() > 12));
     }
 
     /**
@@ -119,6 +127,9 @@ public class Robot extends TimedRobot {
         if(IO.getButton(12)) {
             extender.setToDistance(10);
         }
+
+        SmartDashboard.putNumber("NAVX Pitch", IO.getPitch());
+
     }
 
     @Override

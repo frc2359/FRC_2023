@@ -51,7 +51,7 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
 
-        driveMotor.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        driveMotor.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
 
         //driveEncoder = driveMotor.getEncoder();
         turningEncoder = turningMotor.getEncoder();

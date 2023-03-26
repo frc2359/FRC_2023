@@ -7,21 +7,26 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.IO;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class AutoPathCmd extends SequentialCommandGroup {
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    // private final ADXRS450_Gyro gyroNew = new ADXRS450_Gyro();
     
 
-    double pitchAngleDegrees    = gyro.getPitch();
+    // double pitchAngleDegrees    = gyro.getPitch();
     private final String kinematics = null;
 
+    SwerveSubsystem swerveSubsystem;
 
     // Assuming this method is part of a drivetrain subsystem that provides the necessary methods
     public Command followTrajectoryCommand(SwerveSubsystem swerveSubsystem, PathPlannerTrajectory traj, boolean isFirstPath) {
+        this.swerveSubsystem = swerveSubsystem;
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
             // Reset odometry for the first path you run during auto
@@ -48,7 +53,7 @@ public class AutoPathCmd extends SequentialCommandGroup {
     public Command balance(SwerveSubsystem swerveSubsystem) {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
-                double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
+                double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
                 double xAxisRate = Math.sin(pitchAngleRadians) * -1;
 
 

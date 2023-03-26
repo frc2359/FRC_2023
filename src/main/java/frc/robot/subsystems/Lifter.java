@@ -76,7 +76,7 @@ public class Lifter {
 
     public void run() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
-        SmartDashboard.putNumber("Lifter Conv. Fact.", e.getPositionConversionFactor());
+        SmartDashboard.putNumber("Lifter Case", state);
         SmartDashboard.putBoolean("DIO3", !dio.get());
 
         switch (state) {
@@ -98,6 +98,9 @@ public class Lifter {
                 break;
             case STATE_LIFT_DOWN:
                 spdLifter = -Math.abs(spdLifter);
+                if(e.getPosition() <= 0) {
+                    state = STATE_LIFT_STOP;
+                }
                 break;
             case STATE_LIFT__MOVE_TO_POS:
                 spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
@@ -121,7 +124,7 @@ public class Lifter {
 
         if (IO.getLiftControlLeftY() > 0.5) {
             state = STATE_LIFT_UP;
-        } else if (IO.getLiftControlLeftY() < -0.5) {
+        } else if (IO.getLiftControlLeftY() < -0.5 && e.getPosition() > 0) {
             state = STATE_LIFT_DOWN;
         }
 

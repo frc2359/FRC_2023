@@ -1,16 +1,107 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.button.Button;
 
+
+
 import static frc.robot.RobotMap.*;
+
+import java.util.HashMap;
+
+import com.kauailabs.navx.frc.AHRS;
 
 
 public class IO {
-    private static Joystick driver = new Joystick(DRIVE_PORT);
-    private static XboxController liftCont = new XboxController(LIFT_PORT);
+    /* ------------------------------- CONTORLLER ------------------------------- */
+    private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
+    private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
+
+    /* -------------------------------- LIMELIGHT ------------------------------- */
+    private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    private static NetworkTableEntry tx = limelightTable.getEntry("tx");
+    private static NetworkTableEntry ty = limelightTable.getEntry("ty");
+    private static NetworkTableEntry tz = limelightTable.getEntry("tz");
+    private static NetworkTableEntry tarea = limelightTable.getEntry("ta");
+
+    /* ---------------------------------- GYRO ---------------------------------- */
+    private static final AHRS navx = new AHRS(SPI.Port.kMXP);
+    private static final ADXRS450_Gyro adx = new ADXRS450_Gyro();
+
+
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    GYRO                                    */
+    /* -------------------------------------------------------------------------- */
+    
+    public static class GyroType {
+        public static final boolean kNAVX = false;
+        public static final boolean kADXRS = true;
+    }
+
+    public static void zeroHeading() {
+        navx.reset();
+        adx.reset();
+    }
+
+    public static boolean isRotating(int gyroType) {
+        return navx.isRotating();
+    }
+
+    public static double getPitch() {
+        return navx.getPitch();
+    }
+
+    public static double getRoll() {
+        return navx.getPitch();
+    }
+
+    public static double getAngle(boolean gyroType) {
+        return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
+    }
+
+    public static double getYaw(boolean gyroType) {
+        if (gyroType == GyroType.kNAVX) {
+            return navx.getYaw();
+        } else {
+            return (adx.getAngle() % 360) - 180;
+        }
+    }
+
+    public static Rotation2d getRotation2D(boolean gyroType) {
+        return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
+    }
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                                  LIMELIGHT                                 */
+    /* -------------------------------------------------------------------------- */
+
+    /**Returns a hashmap of the numbers returned from the limelight
+     * @return Hashmap of entries for x ("tx"), y ("ty"), z ("tz"), and area ("tarea").
+     */
+    public static HashMap<String, Double> getLimelightValues() {
+        HashMap<String, Double> m = new HashMap<String, Double>();
+        m.put("tx", tx.getDouble(0.0));
+        m.put("ty", ty.getDouble(0.0));
+        m.put("tz", tz.getDouble(0.0));
+        m.put("tarea", tarea.getDouble(0.0));
+        return m;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                               OPERATOR INPUT                               */
+    /* -------------------------------------------------------------------------- */
 
     /**Checks Button <b>FOR THE DRIVE CONTROLLER</b> 
      * @param btn is the targeted button
@@ -19,6 +110,9 @@ public class IO {
         return driver.getRawButtonPressed(btn);
     }
 
+    /**Get selected axis
+     * @param ax is the axis you selected
+     */
     public static double getRawAxis(int ax) {
         return driver.getRawAxis(ax);
     }
@@ -51,6 +145,11 @@ public class IO {
     public static boolean isYPressed() {
         return liftCont.getYButtonPressed();
     }
+
+    /**Checks POV <b>FOR THE LIFT CONTROLLER</b> */
+    public static int getLiftPOV() {
+        return liftCont.getPOV();
+    }   
 
     /**Checks A <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isAPressed() {

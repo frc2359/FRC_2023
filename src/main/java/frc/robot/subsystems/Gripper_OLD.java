@@ -66,7 +66,7 @@ public class Gripper_OLD {
             SmartDashboard.putBoolean("Gripper Opened", false);
         }
 
-        if(SEPARATE_CONTROLS) {
+        if(OIConstants.SEPARATE_CONTROLS) {
             if(IO.isAPressed()) {
                 state = CASE_CLOSED;
             } else if (IO.isYPressed()) {

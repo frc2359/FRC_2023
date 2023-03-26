@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.IO;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
@@ -22,10 +23,11 @@ public class SwerveJoystickCmd extends CommandBase {
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    // private final ADXRS450_Gyro gyroNew = new ADXRS450_Gyro();
+    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-    double pitchAngleDegrees    = gyro.getPitch();
-    double rollAngleDegrees     = gyro.getRoll();
+    // double pitchAngleDegrees    = gyro.getPitch();
+    // double rollAngleDegrees     = gyro.getRoll();
 
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -49,7 +51,7 @@ public class SwerveJoystickCmd extends CommandBase {
 
     /**Balance the robot */
     public void balance() {
-        double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
+        double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
         double xAxisRate = Math.sin(pitchAngleRadians) * -1;
 
 
@@ -73,9 +75,9 @@ public class SwerveJoystickCmd extends CommandBase {
         double turningSpeed = turningSpdFunction.get();
 
         // 2. Apply deadband
-        xSpeed = Math.abs(xSpeed) > RobotMap.OIConstants.kDeadband ? xSpeed : 0.0;
-        ySpeed = Math.abs(ySpeed) > RobotMap.OIConstants.kDeadband ? ySpeed : 0.0;
-        turningSpeed = Math.abs(turningSpeed) > RobotMap.OIConstants.kDeadband ? turningSpeed : 0.0;
+        xSpeed = Math.abs(xSpeed) > RobotMap.OIConstants.kDriverDeadband ? xSpeed : 0.0;
+        ySpeed = Math.abs(ySpeed) > RobotMap.OIConstants.kDriverDeadband ? ySpeed : 0.0;
+        turningSpeed = Math.abs(turningSpeed) > RobotMap.OIConstants.kDriverDeadband ? turningSpeed : 0.0;
 
         SmartDashboard.putNumber("xSpeed = ", xSpeed);
         SmartDashboard.putNumber("ySpeed = ", ySpeed);
