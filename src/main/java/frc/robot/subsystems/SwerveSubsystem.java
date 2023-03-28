@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO;
 import frc.robot.RobotMap;
 import frc.robot.IO.GyroType;
+import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -146,6 +147,14 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+
+    public void setAutoModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (AutoConstants.kMaxSpeedMetersPerSecond));
+        frontLeft.setAutoDesiredState(desiredStates[0]);
+        frontRight.setAutoDesiredState(desiredStates[1]);
+        backLeft.setAutoDesiredState(desiredStates[2]);
+        backRight.setAutoDesiredState(desiredStates[3]);
     }
     
     public double convToSpeedMult() {

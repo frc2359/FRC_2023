@@ -67,7 +67,10 @@ public class Robot extends TimedRobot {
         // Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already-scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
+        SmartDashboard.putNumber("Accel X", IO.getAccelerationMetersPerSecond());
+
         SmartDashboard.putNumber("PDH", (pdh.getVoltage()));
+        IO.getAprilTagValues();
         SmartDashboard.putBoolean("Battery Good", (pdh.getVoltage() > 12));
     }
 
@@ -83,8 +86,8 @@ public class Robot extends TimedRobot {
             m_autonomousCommand = lifterCommands.runLiftExtend(lift, extender, 2, 2).andThen(m_robotContainer.runPath("New Path", 8, 7));
         } else if (SmartDashboard.getNumber("autoMode", autoMode) == 2) {
             HashMap<String, Command> events = new HashMap<>();
-            events.put("putDownCone", lifterCommands.print("we good?"));
-            events.put("balance", lifterCommands.print("no but like actually?"));
+            // events.put("putDownCone", lifterCommands.print("we good?"));
+            // events.put("balance", lifterCommands.print("no but like actually?"));
             m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", 3, 2, events);
         }
        
@@ -127,8 +130,6 @@ public class Robot extends TimedRobot {
         if(IO.getButton(12)) {
             extender.setToDistance(10);
         }
-
-        SmartDashboard.putNumber("NAVX Pitch", IO.getPitch());
 
     }
 

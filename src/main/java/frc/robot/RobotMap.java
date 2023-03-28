@@ -128,7 +128,7 @@ public interface RobotMap {
         public static final double kPhysicalMaxSpeedMetersPerSecond = 8;  // 13.5?
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond - 2;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 7;
@@ -136,10 +136,10 @@ public interface RobotMap {
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
+        public static final double kMaxSpeedMetersPerSecond = 8;
         public static final double kMaxAngularSpeedRadiansPerSecond = //
                 DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 5;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
         public static final double kPXController = 1.5;
         public static final double kPYController = 1.5;
@@ -237,7 +237,7 @@ public interface RobotMap {
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 3;
 
-        public static final int LIFTER_MAX_ROTATION = 126;
+        public static final int LIFTER_MAX_ROTATION = 118;
 
         public static final int STATE_LIFT_UNKOWN = -1;
         public static final int STATE_LIFT_STOP = 0;
@@ -276,6 +276,8 @@ public interface RobotMap {
     }
 
     public static final class ExtenderConstants {
+        public static double currentlyExtended = 0; //NOT A CONST
+
         public static final int EXTEND_MOT_ID = 14;
 
         /* ---------------------------------- CASES --------------------------------- */

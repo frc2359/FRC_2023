@@ -41,7 +41,7 @@ public class RobotContainer {
                 () -> -IO.getDriveY() * swerveSubsystem.convToSpeedMult(),
                 () -> -IO.getDriveX() * swerveSubsystem.convToSpeedMult(),
                 () -> -IO.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
-                () -> true));
+                () -> !IO.getTrigger()));
 
         //configureButtonBindings();
     }

@@ -36,7 +36,7 @@ public class AutoPathCmd extends SequentialCommandGroup {
                 new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
                 new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
                 new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                swerveSubsystem::setModuleStates, // Module states consumer
+                swerveSubsystem::setAutoModuleStates, // Module states consumer
                 true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
                 swerveSubsystem // Requires this drive subsystem
             )
@@ -61,7 +61,7 @@ public class AutoPathCmd extends SequentialCommandGroup {
                 SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         
                 // 6. Output each module states to wheels
-                swerveSubsystem.setModuleStates(moduleStates);
+                swerveSubsystem.setAutoModuleStates(moduleStates);
             }
         ));
         

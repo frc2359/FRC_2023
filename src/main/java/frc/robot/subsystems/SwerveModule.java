@@ -198,6 +198,29 @@ public class SwerveModule {
         //SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
     }
 
+    public void setAutoDesiredState(SwerveModuleState state) {
+        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
+            stop();
+            return;
+        }
+        state = SwerveModuleState.optimize(state, getState().angle);
+
+        // SET MOTORS ----------------------------------------------------------------------
+        
+        // percent out control
+        driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / AutoConstants.kMaxSpeedMetersPerSecond);
+        
+        // positon control
+        /* 2048 ticks/rev * 10 Rotations in either direction */
+        // double convToSensorCounts = (state.speedMetersPerSecond * (2048 / (ModuleConstants.kWheelDiameterMeters * Math.PI))) / 8.14;
+        // convToSensorCounts =  convToSensorCounts > DriveConstants.kPhysicalMaxSpeedMetersPerSecond ? DriveConstants.kPhysicalMaxSpeedMetersPerSecond : convToSensorCounts; 
+		// System.out.println(state.speedMetersPerSecond);
+        // driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond);
+
+        turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
+        //SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
+    }
+
     public void stop() {
         driveMotor.set(TalonFXControlMode.PercentOutput,0);
         turningMotor.set(0);

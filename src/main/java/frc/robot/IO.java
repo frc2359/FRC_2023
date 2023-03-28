@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -82,6 +84,10 @@ public class IO {
         return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
     }
 
+    public static double getAccelerationMetersPerSecond() {
+        return navx.getRawAccelX();
+    }
+
 
     /* -------------------------------------------------------------------------- */
     /*                                  LIMELIGHT                                 */
@@ -96,6 +102,17 @@ public class IO {
         m.put("ty", ty.getDouble(0.0));
         m.put("tz", tz.getDouble(0.0));
         m.put("tarea", tarea.getDouble(0.0));
+        return m;
+    }
+
+    public static HashMap<String, double[]> getAprilTagValues() {
+        HashMap<String, double[]> m = new HashMap<String, double[]>();
+        m.put("botpose", limelightTable.getEntry("botpose").getDoubleArray(new double [6]));
+        m.put("target_camera", limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double [6]));
+        m.put("target_robot", limelightTable.getEntry("targetpose_robotspace").getDoubleArray(new double [6]));
+        SmartDashboard.putNumberArray("botpose", m.get("botpose"));
+        SmartDashboard.putNumberArray("t_c", m.get("target_camera"));
+        SmartDashboard.putNumberArray("t_r", m.get("target_robot"));
         return m;
     }
 
@@ -185,6 +202,10 @@ public class IO {
     public static double getDriveTwist() {
         SmartDashboard.putNumber("Twist", driver.getTwist());
         return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
+    }
+
+    public static boolean getTrigger() {
+        return driver.getTrigger();
     }
 
     /**Checks POV (little hat guy on top) <b>FOR THE DRIVE CONTROLLER</b> */
