@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotMap.AutoConstants;
+import frc.robot.RobotMap.ClawConstants;
+import frc.robot.RobotMap.DriveConstants;
 import frc.robot.commands.AutoPathCmd;
 import frc.robot.commands.LifterCommands;
 import frc.robot.subsystems.Extender;
@@ -35,6 +38,12 @@ public class Robot extends TimedRobot {
      * initialization code.
      */
     int autoMode = 2;
+
+
+
+    int num = 0;
+    int count = 0;
+    boolean contnue = false;
 
     @Override
     public void robotInit() {
@@ -80,15 +89,16 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        
+        lift.init();
+
         // SmartDashboard.getNumber("autoMode", autoMode);
-        if( SmartDashboard.getNumber("autoMode", autoMode) == 1){
-            m_autonomousCommand = lifterCommands.runLiftExtend(lift, extender, 2, 2).andThen(m_robotContainer.runPath("New Path", 8, 7));
+
+        if(SmartDashboard.getNumber("autoMode", autoMode) == 1) {
+            m_autonomousCommand = lifterCommands.liftThrow(lift, gripper, 41, 5);
+            // .andThen(m_robotContainer.runPath("New Event Path", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO));
         } else if (SmartDashboard.getNumber("autoMode", autoMode) == 2) {
             HashMap<String, Command> events = new HashMap<>();
-            // events.put("putDownCone", lifterCommands.print("we good?"));
-            // events.put("balance", lifterCommands.print("no but like actually?"));
-            m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", 3, 2, events);
+            m_autonomousCommand = m_robotContainer.runPathWithEvents("New Event Path", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO, events);
         }
        
 
@@ -116,6 +126,8 @@ public class Robot extends TimedRobot {
         countLoop = 0;
 
         extender.setExtUnknown();
+
+        
         
     }
 
@@ -123,6 +135,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         // Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already-scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
+        
         CommandScheduler.getInstance().run();
         lift.manualRun();
         gripper.manualControl();
@@ -130,6 +143,13 @@ public class Robot extends TimedRobot {
         if(IO.getButton(12)) {
             extender.setToDistance(10);
         }
+
+        if (IO.getButton(3)) {
+            m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+        } else if (IO.getButton(4)) {
+            m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+        }
+        
 
     }
 

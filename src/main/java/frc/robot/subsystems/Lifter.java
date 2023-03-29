@@ -124,7 +124,7 @@ public class Lifter {
                 }
                 break;
             case STATE_LIFT__MOVE_TO_POS:
-                spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
+                // spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
                 break;
 
         }
@@ -132,12 +132,21 @@ public class Lifter {
         // Send desired position to controller
     }
 
-    public boolean autoRun(double rot) {
-        spdLifter = 1;
-        setToDistance(rot);
-        state = STATE_LIFT__MOVE_TO_POS;
-        run();
-        return true;
+    public boolean autoRun(double rot, double deadband) {
+        if (!dio.get()) {
+            state = STATE_LIFT_ZERO_ENCODERS;
+        } if (homed) {
+            setToDistance(rot);
+            spdLifter = 0.7;
+            state = STATE_LIFT__MOVE_TO_POS;
+        }
+        // run();
+        return (e.getPosition() >= rot - deadband && e.getPosition() <= rot + deadband);
+    }
+
+    public boolean isHomed() {
+        SmartDashboard.putBoolean("isHOmed func", homed);
+        return (homed && !dio.get());
     }
 
     public void manualRun() {

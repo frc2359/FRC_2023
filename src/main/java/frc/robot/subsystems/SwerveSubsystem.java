@@ -114,6 +114,26 @@ public class SwerveSubsystem extends SubsystemBase {
                             frontLeft.getPosition(),
                             backRight.getPosition(),
                             backLeft.getPosition()});
+        
+        
+        
+        showData();
+    }
+
+    public boolean setDriveMode(boolean isBrakeMode) {
+        frontRight.setDriveMode(isBrakeMode);
+        frontLeft.setDriveMode(isBrakeMode);
+        backRight.setDriveMode(isBrakeMode);
+        backLeft.setDriveMode(isBrakeMode);
+        
+        SmartDashboard.putBoolean("Is Brake Mode?", isBrakeMode);
+
+        DriveConstants.currentBrakeMode = isBrakeMode;
+
+        return isBrakeMode;
+    }
+
+    public void showData() {
         SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
         SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoderDeg());
@@ -150,7 +170,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setAutoModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (AutoConstants.kMaxSpeedMetersPerSecond));
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setAutoDesiredState(desiredStates[0]);
         frontRight.setAutoDesiredState(desiredStates[1]);
         backLeft.setAutoDesiredState(desiredStates[2]);

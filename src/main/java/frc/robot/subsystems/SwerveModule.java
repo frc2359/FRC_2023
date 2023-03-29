@@ -51,7 +51,7 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
 
-        driveMotor.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        driveMotor.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
 
         //driveEncoder = driveMotor.getEncoder();
         turningEncoder = turningMotor.getEncoder();
@@ -128,6 +128,12 @@ public class SwerveModule {
 		driveMotor.setSelectedSensorPosition(0, AutoConstants.kPIDLoopIdx, AutoConstants.kTimeoutMs);
     }
 
+    public boolean setDriveMode(boolean isBrakeMode) {
+        System.out.println("asdf");
+        driveMotor.setNeutralMode(isBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
+        return isBrakeMode;
+    }
+    
     /**Set whether the drive motor is inverted 
      * @param inv is true when you want to set it to inverted
     */

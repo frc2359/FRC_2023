@@ -42,8 +42,9 @@ public class Gripper {
         return !dio.get();
     }
 
-    public void setState(int st) {
+    public Gripper setState(int st) {
         this.state = st;
+        return this;
     }
 
     public void run() {

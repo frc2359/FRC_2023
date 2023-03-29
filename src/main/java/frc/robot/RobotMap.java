@@ -63,7 +63,10 @@ public interface RobotMap {
     }
 
     public static final class DriveConstants {
-        public static final boolean BRAKE_MODE_DRIVE = true; 
+        public static final boolean INI_BRAKE_MODE_DRIVE = true;
+
+        public static boolean currentBrakeMode = INI_BRAKE_MODE_DRIVE;
+
         /* -------------------------------------------------------------------------- */
         /*                             PHYSICAL CONSTANTS                             */
         /* -------------------------------------------------------------------------- */
@@ -136,7 +139,7 @@ public interface RobotMap {
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 8;
+        public static final double kMaxSpeedMetersPerSecond = 3.5;
         public static final double kMaxAngularSpeedRadiansPerSecond = //
                 DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
         public static final double kMaxAccelerationMetersPerSecondSquared = 5;
@@ -144,6 +147,9 @@ public interface RobotMap {
         public static final double kPXController = 1.5;
         public static final double kPYController = 1.5;
         public static final double kPThetaController = 3;
+
+        public static final int MAX_PATH_SPEED_AUTO = 3;
+        public static final int MAX_PATH_ACCEL_AUTO = 2;
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
                 new TrapezoidProfile.Constraints(
@@ -300,7 +306,7 @@ public interface RobotMap {
         public static final double EXTENDER_MAX_DISTANCE = 17.4;   // 18.5 inches
         public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
         public static final double EXTENDER_FAST_SPEED = 1;
-        public static final double EXTENDER_SLOW_SPEED = 0.25;
+        public static final double EXTENDER_SLOW_SPEED = 1;
     }
 
 }

@@ -65,10 +65,10 @@ public class SimpleDrive {
         drive3.follow(drive2);
         drive4.follow(drive1);
 
-        drive1.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive2.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive3.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive4.setNeutralMode(DriveConstants.BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive1.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive2.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive3.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive4.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
 
 
         pid = new PIDController(kP, kI, kD, 0.01);
