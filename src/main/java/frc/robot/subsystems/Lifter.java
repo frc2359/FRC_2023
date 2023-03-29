@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.IO;
 
@@ -34,6 +35,8 @@ public class Lifter {
     private int count = 0; // this allows us to save the initial position when the control is stopped so that we can hold it
     private double holdPos;
 
+    private double deadband;
+
     // Set PID constants
     double kP = 0.0;
     double kI = 0.0;
@@ -42,6 +45,7 @@ public class Lifter {
     double kFF = 0;
     double kMaxOutput = 1;
     double kMinOutput = -1;
+    
 
     public void init() {
         e.setPositionConversionFactor((1 / (5 * 5 * 4 * 4)));
@@ -64,6 +68,10 @@ public class Lifter {
 
         homed = false;
         count = 0;
+    }
+
+    public void setState(int state){
+        this.state = state;
     }
 
     public double getRotationAngle() {
@@ -125,6 +133,18 @@ public class Lifter {
                 break;
             case STATE_LIFT__MOVE_TO_POS:
                 // spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
+                if (e.getPosition() >= (setpoint + deadband)){
+                    spdLifter = -0.7;
+                } else if (e.getPosition() >= (setpoint + (2 *deadband))){
+                    spdLifter = -0.3;
+                } else if (e.getPosition() <= (setpoint - deadband)){
+                    spdLifter = 0.7;
+                } else if (e.getPosition() <= (setpoint - (2 * deadband))){
+                    spdLifter = 0.3;
+                } else {
+                    spdLifter = 0;
+                }
+
                 break;
 
         }
@@ -132,7 +152,11 @@ public class Lifter {
         // Send desired position to controller
     }
 
-    public boolean autoRun(double rot, double deadband) {
+    public boolean autoRun(double rot, double deadband) { // this.setpoint = rot, this.deadband = deadband
+
+        this.setpoint = rot;
+        this.deadband = deadband;
+
         if (!dio.get()) {
             state = STATE_LIFT_ZERO_ENCODERS;
         } if (homed) {
@@ -140,7 +164,7 @@ public class Lifter {
             spdLifter = 0.7;
             state = STATE_LIFT__MOVE_TO_POS;
         }
-        // run();
+        run();
         return (e.getPosition() >= rot - deadband && e.getPosition() <= rot + deadband);
     }
 
@@ -173,4 +197,5 @@ public class Lifter {
         
         run();
     }
+
 }

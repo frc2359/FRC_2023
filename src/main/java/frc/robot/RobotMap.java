@@ -306,7 +306,7 @@ public interface RobotMap {
         public static final double EXTENDER_MAX_DISTANCE = 17.4;   // 18.5 inches
         public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
         public static final double EXTENDER_FAST_SPEED = 1;
-        public static final double EXTENDER_SLOW_SPEED = 1;
+        public static final double EXTENDER_SLOW_SPEED = 0.25;
     }
 
 }
