@@ -114,15 +114,15 @@ public class Extender {
             SmartDashboard.putNumber("UserCtrl",userControl);
             SmartDashboard.putNumber("spdExt",spdExtender);
             SmartDashboard.putNumber("extState",stateExtender);
-            SmartDashboard.putBoolean("isHome?", isHome());
+            //SmartDashboard.putBoolean("isHome?", isHome());
             switch(stateExtender) {
                 case STATE_EXT_UNKNOWN:
-                    spdExtender = -.25;      // retract until limit switch is reached
-                    if(isHome()) {
+                    //spdExtender = -.25;      // retract until limit switch is reached
+                    //if(isHome()) {
                         spdExtender = 0;
                         setEncoderHome();
                         stateExtender = STATE_EXT_STOP;
-                    }
+                    //}
                     break; 
                  case STATE_EXT_STOP:
                     spdExtender = 0;
@@ -148,7 +148,8 @@ public class Extender {
                     } else { stateExtender = STATE_EXT_STOP;}
                     break;
                 case STATE_EXT_RETRACT:
-                    if (isHome() || getDistanceInches() <= 0) {
+                if (getDistanceInches() <= 0) {
+                    //if (isHome() || getDistanceInches() <= 0) {
                         spdExtender = 0;
                         state = STATE_EXT_STOP;
                     } else if (getDistanceInches() < EXTENDER_SLOW_DISTANCE) {
@@ -201,6 +202,7 @@ public class Extender {
     }
 
     /* Checks if home limit switch enabled */
+    /*
     public boolean isHome() {
         if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
             return true;
@@ -208,6 +210,7 @@ public class Extender {
             return false;
         }
     }
+    */
 
     /* reset encoder */
     public void setEncoderHome() {
