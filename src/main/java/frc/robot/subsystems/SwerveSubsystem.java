@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO;
 import frc.robot.RobotMap;
+import frc.robot.IO.GyroType;
+import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -57,10 +59,9 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-    double pitchAngleDegrees    = gyro.getPitch();
-    double rollAngleDegrees     = gyro.getRoll();
+    
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
                     RobotMap.DriveConstants.kDriveKinematics,
@@ -76,22 +77,18 @@ public class SwerveSubsystem extends SubsystemBase {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                zeroHeading();
+                IO.zeroHeading();
             } catch (Exception e) {
             }
         }).start();
     }
 
-    public void zeroHeading() {
-        gyro.reset();
-    }
-
-    public double getHeading() {
-        return -1 * Math.IEEEremainder(gyro.getAngle(), 360);
+    public double getCalculatedHeading() {
+        return -1 * Math.IEEEremainder(IO.getAngle(GyroType.kNAVX), 360);
     }
 
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getHeading());
+        return Rotation2d.fromDegrees(getCalculatedHeading());
     }
 
     public Pose2d getPose() {
@@ -117,7 +114,27 @@ public class SwerveSubsystem extends SubsystemBase {
                             frontLeft.getPosition(),
                             backRight.getPosition(),
                             backLeft.getPosition()});
-        SmartDashboard.putNumber("Robot Heading", getHeading());
+        
+        
+        
+        showData();
+    }
+
+    public boolean setDriveMode(boolean isBrakeMode) {
+        frontRight.setDriveMode(isBrakeMode);
+        frontLeft.setDriveMode(isBrakeMode);
+        backRight.setDriveMode(isBrakeMode);
+        backLeft.setDriveMode(isBrakeMode);
+        
+        SmartDashboard.putBoolean("Is Brake Mode?", isBrakeMode);
+
+        DriveConstants.currentBrakeMode = isBrakeMode;
+
+        return isBrakeMode;
+    }
+
+    public void showData() {
+        SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
         SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoderDeg());
         SmartDashboard.putNumber("FR Abs", frontRight.getAbsoluteEncoderDeg());
@@ -151,10 +168,18 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
     }
+
+    public void setAutoModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
+        frontLeft.setAutoDesiredState(desiredStates[0]);
+        frontRight.setAutoDesiredState(desiredStates[1]);
+        backLeft.setAutoDesiredState(desiredStates[2]);
+        backRight.setAutoDesiredState(desiredStates[3]);
+    }
     
     public double convToSpeedMult() {
         SmartDashboard.putNumber("Con", ((IO.getSpeedDial() + 1) * 0.5));
-        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.5) < 0.2 ? ((IO.getSpeedDial() + 1) * 0.5) : 0.2;
+        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.5) < 0.5 ? .5 : 1;
         return spdMultiplier;
     }
 

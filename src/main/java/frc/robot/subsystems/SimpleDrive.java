@@ -65,10 +65,10 @@ public class SimpleDrive {
         drive3.follow(drive2);
         drive4.follow(drive1);
 
-        drive1.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive2.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive3.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        drive4.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive1.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive2.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive3.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        drive4.setNeutralMode(DriveConstants.INI_BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
 
 
         pid = new PIDController(kP, kI, kD, 0.01);
@@ -176,8 +176,8 @@ public class SimpleDrive {
         if ((IO.getDriveY()) > 1 || (IO.getDriveY()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line ?? and edit to an in-bounds expression");
         } else {
-            diffDrive.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
-            diffDrive1.arcadeDrive(IO.getDriveY() * DRIVE_SPEED_MULT, IO.getDriveX() * TURN_SPEED_MULT);
+            diffDrive.arcadeDrive(IO.getDriveY() * OIConstants.DRIVE_SPEED_MULT, IO.getDriveX() * OIConstants.TURN_SPEED_MULT);
+            diffDrive1.arcadeDrive(IO.getDriveY() * OIConstants.DRIVE_SPEED_MULT, IO.getDriveX() * OIConstants.TURN_SPEED_MULT);
             SmartDashboard.putNumber("Encoder Value", encoder0.get());
         }
     }

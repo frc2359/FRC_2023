@@ -33,15 +33,15 @@ public class RobotContainer {
 
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
-    private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
+//     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
 
     public RobotContainer() {
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -IO.getDriveY(),
-                () -> -IO.getDriveX(),
-                () -> -IO.getDriveTwist(),
-                () -> false));
+                () -> -IO.getDriveY() * swerveSubsystem.convToSpeedMult(),
+                () -> -IO.getDriveX() * swerveSubsystem.convToSpeedMult(),
+                () -> -IO.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
+                () -> !IO.getTrigger()));
 
         //configureButtonBindings();
     }
@@ -69,7 +69,6 @@ public class RobotContainer {
      * @return the command for the path the follow */
     public Command runPathWithEvents(String pathName, int maxV, int maxAccel, HashMap<String, Command> events) {
         // final AutoPathCmd command = new AutoPathCmd();
-        System.out.println("good");
 
         PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
         

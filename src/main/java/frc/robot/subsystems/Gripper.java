@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO;
 
 import static frc.robot.RobotMap.*;
@@ -42,8 +43,9 @@ public class Gripper {
         return !dio.get();
     }
 
-    public void setState(int st) {
+    public Gripper setState(int st) {
         this.state = st;
+        return this;
     }
 
     public void run() {
@@ -52,22 +54,22 @@ public class Gripper {
                 setpoint = 0;
                 break;
             case CASE_INTAKE:
-                setpoint = 0.6;
+                setpoint = 0.8;
                 break;
             case CASE_POWERED_HOLD:
-                setpoint = 0.1;
+                setpoint = 0.3;
                 break;
             case CASE_EXPEL_CUBE_HIGH:
                 setpoint = -1;
                 break;
             case CASE_EXPEL_CUBE_MID:
-                setpoint = -0.5;
+                setpoint = -0.8;
                 break;
             case CASE_EXPEL_CUBE_LOW:
-                setpoint = -0.3;
+                setpoint = -0.5;
                 break;
             case CASE_EXPEL_CONE:
-                setpoint = -0.4;
+                setpoint = -0.6;
                 break;
         }
         gripMotorRight.set(PO, setpoint);
@@ -87,14 +89,13 @@ public class Gripper {
      */
     public void manualControl() {
         lineTripped();
-        if (!IO.isXPressed() && IO.isAPressed()) {  this.state = CASE_INTAKE;  } //intake
+        if (IO.isAPressed()) {  this.state = CASE_INTAKE;  } //intake
         
-        else if (IO.isXPressed()) { //cube expel selector
-            if(IO.isXPressed() && IO.isYPressed()) { this.state = CASE_EXPEL_CUBE_HIGH; }
-            else if(IO.isXPressed() && IO.isBPressed()) { this.state = CASE_EXPEL_CUBE_MID; }
-            else if(IO.isXPressed() && IO.isAPressed()) { this.state = CASE_EXPEL_CUBE_LOW; }
-        } else if (!IO.isXPressed() && IO.isYPressed()) {  this.state = CASE_EXPEL_CONE;  } //expel cone
-          else if (!IO.isXPressed() && IO.isBPressed()) {  this.state = CASE_STOP;  } // stop motor
+        else if(IO.getLiftPOV() == 0) { this.state = CASE_EXPEL_CUBE_HIGH; }
+        else if(IO.getLiftPOV() == 90) { this.state = CASE_EXPEL_CUBE_MID; }
+        else if(IO.getLiftPOV() == 180) { this.state = CASE_EXPEL_CUBE_LOW; }
+        else if (IO.isYPressed()) {  this.state = CASE_EXPEL_CONE;  } //expel cone
+        else if (!IO.isXPressed() && IO.isBPressed()) {  this.state = CASE_STOP;  } // stop motor
 
         if (this.state == CASE_INTAKE && lineTripped()) {
             this.state = CASE_POWERED_HOLD;

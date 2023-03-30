@@ -1,0 +1,59 @@
+ /**Lift to previously set liftDist and liftDeadband */
+    public Command liftThrow() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> {
+                int num = 0;
+                int count = 0;
+                boolean contnue = false;
+
+                switch(num) {
+                    case 0:
+                        contnue = lift.autoRun(liftDist, liftDeadband);
+                        if (contnue) {
+                            num = 1;
+                            contnue = false;
+                        }
+                        break;
+                    case 1:
+                        while (count < 10) {
+                            grip.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
+                            count++;
+                        }
+                        if (count >= 10) {
+                            grip.setState(ClawConstants.CASE_STOP).run();
+                        }
+                        break;
+                }
+            })
+        );
+    }
+
+/**Extend the extender, then run the lifter to the desired locations
+     * @param lift is the lifter object being targeted
+     * @param extender is the extender object being targeted
+     * @param extenderDist is the desired distance to extend
+     * @param liftDistance is the desired rotation of the lifter
+     */
+    public Command runLiftExtend(Lifter lift, Extender extender, int extenderDist, int liftDistance) {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> {
+                System.out.println("we good?");
+                int num = 0;
+                boolean contnue = false;
+                switch(num) {
+                    case 0:
+                        contnue = extender.extendToDistance(extenderDist);
+                        if(contnue) {
+                            contnue = false;
+                            num++;
+                        }
+                        break;
+                    case 1:
+                        contnue = lift.autoRun(liftDistance, 5);
+                        break;
+                        
+
+                }
+            })
+        );
+    }
