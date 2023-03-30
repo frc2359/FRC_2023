@@ -216,7 +216,7 @@ public class Extender {
     }
 
     /* Checks if home limit switch enabled */
-    /*
+    
     public boolean isHome() {
         if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
             return true;
@@ -224,7 +224,7 @@ public class Extender {
             return false;
         }
     }
-    */
+    
 
     /* reset encoder */
     public void setEncoderHome() {

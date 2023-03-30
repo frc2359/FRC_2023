@@ -153,10 +153,17 @@ public class IO {
         return liftCont.getRightX();
     }
 
+    /**Checks left joystick pressed</b> */
+    public static boolean isLeftAxisPressed(){
+        return liftCont.getLeftStickButtonPressed();
+    }
+
     /**Checks X <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isXPressed() {
         return liftCont.getXButtonPressed();
     }
+
+    
 
     /**Checks Y <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isYPressed() {
