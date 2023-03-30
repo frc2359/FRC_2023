@@ -98,6 +98,8 @@ public class Lifter {
         run();
     }
 
+    // function to return lifter and extender to 0
+
     public void run() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Case", state);

@@ -240,7 +240,10 @@ public class Extender {
 
         if(OIConstants.SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
             extendMot.set(ControlMode.PercentOutput, 0.5);
-            if(getDistanceInches() < 5) {
+            double dist = getDistanceInches();
+            if(dist <= 0) {
+                state = CASE_STOP;
+            } else if(dist < 5) {
                 state = CASE_UP_SLOW;
             } else {
                 state = CASE_UP;

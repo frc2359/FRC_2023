@@ -51,15 +51,20 @@ public class LiftThrowCmd extends CommandBase {
                 }
                 break;
             
-                case 2:
+            case 2:
                 while (count < 10) {
                     grip.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
                     count++;
                 }
                 if (count >= 10) {
                     grip.setState(ClawConstants.CASE_STOP).run();
+                    count++;
                 }
                 break;
+            case 3:
+                lift.zeroPosition();
+                break;
+
         }
     }
 
