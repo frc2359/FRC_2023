@@ -25,8 +25,9 @@ public class HomeCmd extends CommandBase{
 
     public void home(){
         if(IO.isLeftAxisPressed()){
-            extend.zeroPosition();
-            lift.zeroPosition();
+            extend.setToDistance(0);
+            lift.setToDistance(5, 5);
+            
         }
     }
 

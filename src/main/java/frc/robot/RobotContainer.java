@@ -14,6 +14,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -121,4 +123,25 @@ public class RobotContainer {
                 swerveControllerCommand,
                 new InstantCommand(() -> swerveSubsystem.stopModules()));
     }
+
+    public void balance() {
+        double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
+        double xAxisRate = Math.sin(pitchAngleRadians) * -1;
+
+        
+        double rollAngleRadians = IO.getRoll() * (Math.PI / 180.0);
+        double yAxisRate = Math.sin(rollAngleRadians) * -1;
+
+        // 4. Construct desired chassis speeds
+        ChassisSpeeds chassisSpeeds;
+        chassisSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
+         
+      
+        // 5. Convert chassis speeds to individual module states
+        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+ 
+        // 6. Output each module states to wheels
+        swerveSubsystem.setModuleStates(moduleStates);
+    }
+
 }

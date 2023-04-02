@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 //Import SPARK MAX libraries
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -29,7 +30,7 @@ public class Lifter {
 
     private double setpoint;
     private double spdLifter;
-    private int state = STATE_LIFT_UNKOWN;
+    private int stateLifter = STATE_LIFT_UNKOWN;
 
     private boolean homed = false; //to know if the lifter is homed
     private int count = 0; // this allows us to save the initial position when the control is stopped so that we can hold it
@@ -70,8 +71,12 @@ public class Lifter {
         count = 0;
     }
 
-    public void setState(int state){
-        this.state = state;
+    public void setStateLifter(int stateSetpoint){
+        this.stateLifter = stateSetpoint;
+    }
+
+    public int getStateLifter() {
+        return this.stateLifter;
     }
 
     public double getRotationAngle() {
@@ -79,7 +84,8 @@ public class Lifter {
     }
 
     public double getMaxRotation() {
-        return 180 - Math.toDegrees(Math.acos(14 / (16.5 + (ExtenderConstants.currentlyExtended))));
+        return LIFTER_MAX_ROTATION;
+        // return 180 - Math.toDegrees(Math.acos(14 / (16.5 + (ExtenderConstants.currentlyExtended))));
     }
 
     public void setToDistance(double setpoint) {
@@ -88,13 +94,25 @@ public class Lifter {
 
         this.setpoint = setpoint;
 
-        if (state != STATE_LIFT_UNKOWN) {
-            state = STATE_LIFT__MOVE_TO_POS;
+        if (stateLifter != STATE_LIFT_UNKOWN) {
+            stateLifter = STATE_LIFT__MOVE_TO_POS;
+        }
+    }
+
+    public void setToDistance(double setpoint, double deadband) {
+        setpoint = setpoint < 0.0 ? 0 : setpoint;
+        setpoint = setpoint > getMaxRotation() ? getMaxRotation() : setpoint;
+
+        this.setpoint = setpoint;
+        this.deadband = deadband;
+
+        if (stateLifter != STATE_LIFT_UNKOWN) {
+            stateLifter = STATE_LIFT__MOVE_TO_POS;
         }
     }
 
     public void zeroPosition() {
-        state = STATE_LIFT_UNKOWN;
+        stateLifter = STATE_LIFT_UNKOWN;
         run();
     }
 
@@ -102,35 +120,35 @@ public class Lifter {
 
     public void run() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
-        SmartDashboard.putNumber("Lifter Case", state);
+        SmartDashboard.putNumber("Lifter Case", stateLifter);
         SmartDashboard.putBoolean("DIO3", !dio.get());
         SmartDashboard.putNumber("Ext Max Rot Calc", getMaxRotation());
 
-        switch (state) {
+        switch (stateLifter) {
             case STATE_LIFT_UNKOWN:
-                spdLifter = -0.3;
+                spdLifter = -0.1;
                 if (!dio.get()) {
-                    state = STATE_LIFT_ZERO_ENCODERS;
+                    stateLifter = STATE_LIFT_ZERO_ENCODERS;
                 }
                 break;
             case STATE_LIFT_ZERO_ENCODERS:
                 this.homed = true;
                 e.setPosition(0);
                 spdLifter = 0;
-                state = STATE_LIFT_STOP;
+                stateLifter = STATE_LIFT_STOP;
             case STATE_LIFT_STOP:
                 spdLifter = 0;
                 break;
             case STATE_LIFT_UP:
                 spdLifter = Math.abs(spdLifter);
                 if(e.getPosition() <= 5 || e.getPosition() >= getMaxRotation()) {
-                    state = STATE_LIFT_STOP;
+                    stateLifter = STATE_LIFT_STOP;
                 }
                 break;
             case STATE_LIFT_DOWN:
                 spdLifter = -Math.abs(spdLifter);
                 if(e.getPosition() <= 0 || e.getPosition() >= getMaxRotation()) {
-                    state = STATE_LIFT_STOP;
+                    stateLifter = STATE_LIFT_STOP;
                 }
                 break;
             case STATE_LIFT__MOVE_TO_POS:
@@ -159,20 +177,27 @@ public class Lifter {
         this.setpoint = rot;
         this.deadband = deadband;
 
-        if (!dio.get()) {
-            state = STATE_LIFT_ZERO_ENCODERS;
-        } if (homed) {
+        if (homed) {
             setToDistance(rot);
             spdLifter = 0.7;
-            state = STATE_LIFT__MOVE_TO_POS;
+            stateLifter = STATE_LIFT__MOVE_TO_POS;
         }
         run();
         return (e.getPosition() >= rot - deadband && e.getPosition() <= rot + deadband);
     }
 
-    public boolean isHomed() {
-        SmartDashboard.putBoolean("isHOmed func", homed);
-        return (homed && !dio.get());
+    /**return true if the lifter has been homed */
+    public boolean isHomed() { 
+        return homed;
+    }
+
+    public void setDriveMode(boolean isBrake) {
+        spark.setIdleMode(isBrake ? IdleMode.kBrake : IdleMode.kCoast);
+        SmartDashboard.putBoolean("LiftBrakeMode", spark.getIdleMode() == IdleMode.kBrake);
+    }
+
+    public boolean currentlyHomed() {
+        return !dio.get();
     }
 
     public void manualRun() {
@@ -180,11 +205,11 @@ public class Lifter {
 
         if (IO.getLiftControlLeftY() > 0.5 && e.getPosition() < getMaxRotation()) {
             SmartDashboard.putBoolean("Holding", false);
-            state = STATE_LIFT_UP;
+            stateLifter = STATE_LIFT_UP;
             count = 0;
         } else if (IO.getLiftControlLeftY() < -0.5 && e.getPosition() > 5) {
             SmartDashboard.putBoolean("Holding", false);
-            state = STATE_LIFT_DOWN;
+            stateLifter = STATE_LIFT_DOWN;
             count = 0;
         } else if (homed && IO.getLiftControlLeftY() > -0.5 && IO.getLiftControlLeftY() < 0.5) {
             SmartDashboard.putNumber("Hold Position", holdPos);

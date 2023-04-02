@@ -75,15 +75,15 @@ public class Gripper_OLD {
                 state = CASE_STOP;
             }
         } else {
-            if(IO.getButton(10)){
+            if(IO.getDriverButton(10)){
                 state = CASE_STOP;
             }
     
-            if(IO.getButton(3)){
+            if(IO.getDriverButton(3)){
                 state = CASE_OPEN;
             }
     
-            if(IO.getButton(4)){
+            if(IO.getDriverButton(4)){
                 state = CASE_CLOSED;
             }
         }

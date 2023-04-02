@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -20,7 +21,7 @@ import static frc.robot.RobotMap.ExtenderConstants.*;
 
 public class Extender {
     private static TalonSRX extendMot;
-    private int state = 0;
+    // private int state = 0;
     private int stateExtender = -1;
     private double spdExtender = 0;
     private double targetDistanceInches = 0;
@@ -30,20 +31,22 @@ public class Extender {
 
     public void init() {
         extendMot = new TalonSRX(EXTEND_MOT_ID);
-        // gripMot.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        extendMot.configFactoryDefault();
+        // extendMot.configForwardLimitSwitchSource(null, null);
+        extendMot.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, 0);
         extendMot.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-        //0 encoder
+        extendMot.setInverted(false);
+        extendMot.setSelectedSensorPosition(0);
     }
 
-    /**Control via external systems */
-    public void switchState(int st) {
-        this.state = st;
+    /**Set Extender State */
+    public void setStateExtender(int st) {
+        this.stateExtender = st;
     }
 
     public boolean extendToDistance(double dist) {
-        
         this.distance = dist;
-        this.state = CASE_EXTEND_TO_DIST;
+        this.stateExtender = CASE_EXTEND_TO_DIST;
         // extendEm();
         return autoCompleted;
     }
@@ -61,53 +64,13 @@ public class Extender {
         return dist * 195.44;
     }
 
-    /** <i><b>DEPRECIATED</b></i> Case system that directly controls movement */
-    public void extendEm() {
-        SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Extender Inches", getDistanceInches());
-        SmartDashboard.putNumber("Extender Case", state);
-        SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
-        SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
-
-        switch(state) {
-            case CASE_ZERO_ENCODERS:
-                extendMot.setSelectedSensorPosition(0);
-                state = CASE_STOP;
-            case CASE_STOP:
-                extendMot.set(ControlMode.PercentOutput, 0);
-                break;
-            case CASE_UP:
-                extendMot.set(ControlMode.PercentOutput, .75 * IO.getLiftControlRightX());
-                
-                break;
-            case CASE_UP_SLOW:
-                extendMot.set(ControlMode.PercentOutput, .4 * IO.getLiftControlRightX());
-                break;
-            case CASE_DOWN:
-                extendMot.set(ControlMode.PercentOutput, .75 * IO.getLiftControlRightX());
-                
-                break;
-            case CASE_DOWN_SLOW:
-                extendMot.set(ControlMode.PercentOutput, .4 * IO.getLiftControlRightX());
-                break;
-            case CASE_EXTEND_TO_DIST:
-                if(extendMot.getSelectedSensorPosition() >= distance) {
-                    extendMot.set(ControlMode.PercentOutput, 0);
-                    autoCompleted = true;
-                } else {
-                    extendMot.set(ControlMode.PercentOutput, .3);
-                }
-                break;
-        }
-    }
-
     /* TEMP */
     public void setExtUnknown() {
         stateExtender = STATE_EXT_UNKNOWN;
     }
 
     public void zeroPosition() {
-        state = STATE_EXT_UNKNOWN;
+        stateExtender = STATE_EXT_UNKNOWN;
         runExtender();
     }
 
@@ -115,42 +78,61 @@ public class Extender {
         return extendMot.getSelectedSensorPosition();
     }
 
+    public void showData() {
+        SmartDashboard.putBoolean("Extender Back", isHome());
+        SmartDashboard.putBoolean("Extender Fwd", extendMot.getSensorCollection().isRevLimitSwitchClosed());
+        SmartDashboard.putBoolean("Extender Rev", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
+    }
+
     /**Case system that directly controls movement */
     public void runExtender() {
-        SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Extender Inches", getDistanceInches());
-        SmartDashboard.putNumber("Extender Case", state);
-        SmartDashboard.putBoolean("Extender Forward LS", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
-        SmartDashboard.putBoolean("Extender Reverse LS", extendMot.getSensorCollection().isRevLimitSwitchClosed());
-        
         spdExtender = 0;
         userControl = IO.getLiftControlRightX();
-        if (Math.abs(userControl) < 0.05) { userControl = 0.0; }    // deadband
+
+        if(isHome()) {  setEncoderHome();  }
+
+        SmartDashboard.putNumber("Extender Encoder", extendMot.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Extender Inches", getDistanceInches());
+        SmartDashboard.putNumber("Extender Case", stateExtender);
+        SmartDashboard.putBoolean("Extender Back", isHome());
+        SmartDashboard.putBoolean("Extender Fwd", extendMot.getSensorCollection().isRevLimitSwitchClosed());
+        SmartDashboard.putBoolean("Extender Rev", extendMot.getSensorCollection().isFwdLimitSwitchClosed());
         SmartDashboard.putNumber("UserCtrl",userControl);
-        SmartDashboard.putNumber("spdExt",spdExtender);
-        SmartDashboard.putNumber("extState",stateExtender);
-        SmartDashboard.putBoolean("isHome?", isHome());
+        
+
+
+        if (Math.abs(userControl) < 0.1) { // deadband
+            userControl = 0.0; 
+        }    
+
+        
         switch(stateExtender) {
             case STATE_EXT_UNKNOWN:
-                spdExtender = -.25;      // retract until limit switch is reached
+                spdExtender = -0.7;      // retract until limit switch is reached
                 if(isHome()) {
                     spdExtender = 0;
+                    userControl = 0;
                     setEncoderHome();
                     stateExtender = STATE_EXT_STOP;
                 }
                 break; 
-                case STATE_EXT_STOP:
+
+            case STATE_EXT_STOP:
                 spdExtender = 0;
                 if (userControl > 0) {
                     stateExtender = STATE_EXT_EXTEND;
                 } else if (userControl < 0) {
                     stateExtender = STATE_EXT_RETRACT;
-                } else { stateExtender = STATE_EXT_STOP;}
+                } else { 
+                    stateExtender = STATE_EXT_STOP;
+                }
                 break;
+            
             case STATE_EXT_EXTEND:
                 if (getDistanceInches() >= EXTENDER_MAX_DISTANCE) {
                     spdExtender = 0;
-                    state = STATE_EXT_STOP;
+                    stateExtender = STATE_EXT_STOP;
+                    break;
                 } else if (getDistanceInches() > EXTENDER_MAX_DISTANCE - EXTENDER_SLOW_DISTANCE) {
                     spdExtender = EXTENDER_SLOW_SPEED * userControl;
                 } else {
@@ -158,14 +140,18 @@ public class Extender {
                 }
                 if (userControl > 0) {
                     stateExtender = STATE_EXT_EXTEND;
+                    break;
                 } else if (userControl < 0) {
                     stateExtender = STATE_EXT_RETRACT;
                 } else { stateExtender = STATE_EXT_STOP;}
                 break;
+            
             case STATE_EXT_RETRACT:
-                if (isHome() || getDistanceInches() <= 0) {
+                SmartDashboard.putNumber("Extender Case", stateExtender);
+
+                if (isHome()) {
                     spdExtender = 0;
-                    state = STATE_EXT_STOP;
+                    stateExtender = STATE_EXT_STOP;
                 } else if (getDistanceInches() < EXTENDER_SLOW_DISTANCE) {
                     spdExtender = EXTENDER_SLOW_SPEED * userControl;
                 } else {
@@ -177,6 +163,7 @@ public class Extender {
                     stateExtender = STATE_EXT_RETRACT;
                 } else { stateExtender = STATE_EXT_STOP;}
                 break;
+            
             case STATE_EXT_MOVE_TO_POS:
                 double pos = getDistanceInches();
                 if (Math.abs(pos - targetDistanceInches) < 0.05 || userControl != 0.0) {
@@ -204,10 +191,13 @@ public class Extender {
                 break;
             */
         }
+
+        SmartDashboard.putNumber("spdExt",spdExtender);
+
         extendMot.set(ControlMode.PercentOutput, spdExtender);
     }
 
-    /* Move Extender to Pos */
+    /** Move Extender to Pos */
     public void setToDistance(double dist) {
         if (dist < 0.0) { dist = 0;}
         if (dist > EXTENDER_MAX_DISTANCE) { dist = EXTENDER_MAX_DISTANCE;}
@@ -215,10 +205,11 @@ public class Extender {
         if (stateExtender != STATE_EXT_UNKNOWN) { stateExtender = STATE_EXT_MOVE_TO_POS; }
     }
 
-    /* Checks if home limit switch enabled */
-    
+    /** Checks if home limit switch enabled */
     public boolean isHome() {
-        if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
+        if(extendMot.getSensorCollection().isRevLimitSwitchClosed() || extendMot.getSensorCollection().isFwdLimitSwitchClosed()) {
+            extendMot.setSelectedSensorPosition(0);
+            
             return true;
         } else {
             return false;
@@ -230,45 +221,4 @@ public class Extender {
     public void setEncoderHome() {
         extendMot.setSelectedSensorPosition(0);
     }
-
-    /**Runs the system manually. Control via joystick */
-    public void manualRun() {
-        extendEm();
-
-        if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
-            extendMot.set(ControlMode.PercentOutput, 0);
-            state = CASE_ZERO_ENCODERS;
-        }
-
-        if(OIConstants.SEPARATE_CONTROLS ? IO.getLiftControlRightX() > 0.1 : IO.isPOVToAngle(90)){
-            extendMot.set(ControlMode.PercentOutput, 0.5);
-            double dist = getDistanceInches();
-            if(dist <= 0) {
-                state = CASE_STOP;
-            } else if(dist < 5) {
-                state = CASE_UP_SLOW;
-            } else {
-                state = CASE_UP;
-            }
-        }
-
-        if(OIConstants.SEPARATE_CONTROLS ? IO.getLiftControlRightX() < -0.1 : IO.isPOVToAngle(270)){
-            if(extendMot.getSensorCollection().isRevLimitSwitchClosed()) {
-                extendMot.set(ControlMode.PercentOutput, 0);
-                state = CASE_ZERO_ENCODERS;
-            } else {
-                if(getDistanceInches() < 5) {
-                    state = CASE_DOWN_SLOW;
-                } else {
-                    state = CASE_DOWN;
-                }
-            }
-        } else {
-            state = CASE_STOP;
-        }
-
-        
-    }
-
-    
 }

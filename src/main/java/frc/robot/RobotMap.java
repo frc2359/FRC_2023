@@ -46,6 +46,12 @@ public interface RobotMap {
     public static final int BACK_LEFT_ENC = 3;
     public static final int BACK_RIGHT_ENC = 4;
 
+    public static final class LimelightConsants {
+        public static final int kPipelineLedSettings = 0;
+        public static final int kLedOff = 1;
+        public static final int kLedBlink = 2;
+        public static final int kLedOn = 3;
+    }
 
     public static final class ModuleConstants {
         public static final GearRatio SWERVE_GEAR_RATIO = Mk4iSwerveModuleHelper.GearRatio.L1; //OLD
@@ -64,6 +70,9 @@ public interface RobotMap {
 
     public static final class DriveConstants {
         public static final boolean INI_BRAKE_MODE_DRIVE = true;
+
+        public static final boolean kBrakeMode = true;
+        public static final boolean kCoastMode = false;
 
         public static boolean currentBrakeMode = INI_BRAKE_MODE_DRIVE;
 
@@ -151,6 +160,12 @@ public interface RobotMap {
         public static final int MAX_PATH_SPEED_AUTO = 3;
         public static final int MAX_PATH_ACCEL_AUTO = 2;
 
+        public static final int kOut = 1;
+        public static final int kShootAndFarOutSpin = 2;
+        public static final int kShootAndOut = 3;
+        public static final int kShootOutBalance = 4;
+
+
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
                 new TrapezoidProfile.Constraints(
                         kMaxAngularSpeedRadiansPerSecond,
@@ -211,6 +226,7 @@ public interface RobotMap {
     public static final class OIConstants {
         public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
         public static final int LIFT_PORT = 1;
+        public static final int BOX_PORT = 2;
 
         public static final boolean SEPARATE_CONTROLS = true;
 
@@ -236,14 +252,14 @@ public interface RobotMap {
         public static final double kMaxAngularSpeedRadiansPerSecond = 1.2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 1.2;
 
-        public static final double kMaxMultiplier = 0.3;
+        public static final double kMaxMultiplier = 0.5;
 
         public static final int LIFT_ID = 10;
         public static final int EXTEND_ID = 11;
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 3;
 
-        public static final int LIFTER_MAX_ROTATION = 118;
+        public static final int LIFTER_MAX_ROTATION = 125;
 
         public static final int STATE_LIFT_UNKOWN = -1;
         public static final int STATE_LIFT_STOP = 0;
@@ -303,10 +319,10 @@ public interface RobotMap {
         public static final int STATE_EXT_MOVE_TO_POS = 9;
 
         /* ------------------------- EXTENDER CONSTANTS ----------------------------- */
-        public static final double EXTENDER_MAX_DISTANCE = 17.4;   // 18.5 inches
+        public static final double EXTENDER_MAX_DISTANCE = 17.5;   // 18.5 inches
         public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
         public static final double EXTENDER_FAST_SPEED = 1;
-        public static final double EXTENDER_SLOW_SPEED = 0.25;
+        public static final double EXTENDER_SLOW_SPEED = 0.3;
     }
 
 }

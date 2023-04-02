@@ -19,7 +19,7 @@ public class LiftThrowCmd extends CommandBase {
     private int liftDeadband;
     private int extenderDist;
     private int extenderDeadband;
-    private int foo;
+    private int liftCmdState;
 
     public LiftThrowCmd(Lifter lift, Gripper grip, Extender extend, int liftDist, int liftDeadband) {
         this.lift = lift;
@@ -27,38 +27,37 @@ public class LiftThrowCmd extends CommandBase {
         this.extend = extend;
         this.liftDist = liftDist;
         this.liftDeadband = liftDeadband;
+        // lift.setState(LifterConstants.STATE_LIFT_UNKOWN);
     }
 
     @Override
     public void execute() {
-        int count = 0;
+        int countGripTime = 0;
         boolean contnue = false;
+        SmartDashboard.putNumber("AutoLiftState", liftCmdState);
 
-        switch(foo) {
+        switch(liftCmdState) {
             case 0:
-                lift.setState(LifterConstants.STATE_LIFT_UNKOWN);
-                lift.run();
-                if(lift.isHomed()){
-                    foo++;
+                if(lift.currentlyHomed()){
+                    liftCmdState++;
                 }
+                // lift.run();
                 break;
-
             case 1:
                 contnue = lift.autoRun(liftDist, liftDeadband); // 41
                 if (contnue) {
-                    foo++;
+                    liftCmdState++;
                     contnue = false;
                 }
                 break;
-            
             case 2:
-                while (count < 10) {
+                while (countGripTime < 10) {
                     grip.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
-                    count++;
+                    countGripTime++;
                 }
-                if (count >= 10) {
+                if (countGripTime >= 10) {
                     grip.setState(ClawConstants.CASE_STOP).run();
-                    count++;
+                    countGripTime++;
                 }
                 break;
             case 3:
@@ -75,7 +74,7 @@ public class LiftThrowCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (lift.isHomed() && foo == 2) {
+        if (lift.isHomed() && liftCmdState == 2) {
             return false;
         } else {
             return true;

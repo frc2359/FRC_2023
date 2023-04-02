@@ -120,20 +120,22 @@ public class SwerveSubsystem extends SubsystemBase {
         showData();
     }
 
+    /**Set drive mode between brake and coast */
     public boolean setDriveMode(boolean isBrakeMode) {
         frontRight.setDriveMode(isBrakeMode);
         frontLeft.setDriveMode(isBrakeMode);
         backRight.setDriveMode(isBrakeMode);
         backLeft.setDriveMode(isBrakeMode);
         
-        SmartDashboard.putBoolean("Is Brake Mode?", isBrakeMode);
+        SmartDashboard.putBoolean("SwerveBrakeMode?", isBrakeMode);
 
         DriveConstants.currentBrakeMode = isBrakeMode;
 
         return isBrakeMode;
     }
-
+    /**Show swerve data */
     public void showData() {
+        SmartDashboard.putNumber("Robot Fused Heading", IO.getFusedHeading());
         SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
         SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoderDeg());
@@ -178,8 +180,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public double convToSpeedMult() {
-        SmartDashboard.putNumber("Con", ((IO.getSpeedDial() + 1) * 0.5));
-        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.5) < 0.5 ? .5 : 1;
+        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.25) + 0.5;
+        SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }
 

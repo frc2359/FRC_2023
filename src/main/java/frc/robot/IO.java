@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,16 @@ public class IO {
     /* ------------------------------- CONTORLLER ------------------------------- */
     private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
     private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
-
+    private static GenericHID buttonBox;
+    
+    public void ini() { 
+        try { 
+            buttonBox = new GenericHID(OIConstants.BOX_PORT);
+        } catch (Exception e) {
+            buttonBox = null;
+        }
+    }
+    
     /* -------------------------------- LIMELIGHT ------------------------------- */
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
     private static NetworkTableEntry tx = limelightTable.getEntry("tx");
@@ -36,7 +46,7 @@ public class IO {
 
     /* ---------------------------------- GYRO ---------------------------------- */
     private static final AHRS navx = new AHRS(SPI.Port.kMXP);
-    private static final ADXRS450_Gyro adx = new ADXRS450_Gyro();
+    // private static final ADXRS450_Gyro adx = new ADXRS450_Gyro();
 
 
 
@@ -51,9 +61,18 @@ public class IO {
         public static final boolean kADXRS = true;
     }
 
+    public static double getFusedHeading() {
+        return navx.getFusedHeading();
+    }
+
     public static void zeroHeading() {
         navx.reset();
-        adx.reset();
+        navx.setAngleAdjustment(180);
+        // adx.reset();
+    }
+
+    public static void zeroYaw() {
+        navx.zeroYaw();
     }
 
     public static boolean isRotating(int gyroType) {
@@ -69,21 +88,24 @@ public class IO {
     }
 
     public static double getAngle(boolean gyroType) {
-        return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
+        return navx.getAngle();
+        // return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
     }
 
     public static double getYaw(boolean gyroType) {
-        if (gyroType == GyroType.kNAVX) {
+        // if (gyroType == GyroType.kNAVX) {
             return navx.getYaw();
-        } else {
-            return (adx.getAngle() % 360) - 180;
-        }
+        // } else {
+        //     return (adx.getAngle() % 360) - 180;
+        // }
     }
 
     public static Rotation2d getRotation2D(boolean gyroType) {
-        return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
+        return navx.getRotation2d();
+        // return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
     }
 
+    /**get the navx measured accel in m/s^2 */
     public static double getAccelerationMetersPerSecond() {
         return navx.getRawAccelX();
     }
@@ -105,6 +127,9 @@ public class IO {
         return m;
     }
 
+    /**Get AprilTag values
+     * @return HashMap of botpose, target camera, and target robot values.
+     */
     public static HashMap<String, double[]> getAprilTagValues() {
         HashMap<String, double[]> m = new HashMap<String, double[]>();
         m.put("botpose", limelightTable.getEntry("botpose").getDoubleArray(new double [6]));
@@ -116,6 +141,10 @@ public class IO {
         return m;
     }
 
+    public static void setLed(int setpoint) {
+        limelightTable.getEntry("ledMode").setNumber(setpoint);
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                               OPERATOR INPUT                               */
     /* -------------------------------------------------------------------------- */
@@ -123,8 +152,15 @@ public class IO {
     /**Checks Button <b>FOR THE DRIVE CONTROLLER</b> 
      * @param btn is the targeted button
     */
-    public static boolean getButton(int btn) {
+    public static boolean getDriverButton(int btn) {
         return driver.getRawButtonPressed(btn);
+    }
+
+    /**Checks Button <b>FOR THE BUTTON BOX</b> 
+     * @param btn is the targeted button
+    */
+    public static boolean getHIDButton(int btn) {
+        return (buttonBox != null ? buttonBox.getRawButtonPressed(btn) : false);
     }
 
     /**Get selected axis
@@ -153,17 +189,20 @@ public class IO {
         return liftCont.getRightX();
     }
 
-    /**Checks left joystick pressed</b> */
+    /**Checks left joystick pressed <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isLeftAxisPressed(){
         return liftCont.getLeftStickButtonPressed();
+    }
+
+    /**Checks left joystick pressed <b>FOR THE LIFT CONTROLLER</b> */
+    public static boolean isRightAxisPressed(){
+        return liftCont.getRightStickButtonPressed();
     }
 
     /**Checks X <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isXPressed() {
         return liftCont.getXButtonPressed();
     }
-
-    
 
     /**Checks Y <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isYPressed() {
@@ -183,6 +222,10 @@ public class IO {
     /**Checks B <b>FOR THE LIFT CONTROLLER</b> */
     public static boolean isBPressed() {
         return liftCont.getBButtonPressed();
+    }
+
+    public static boolean isLeftBumpPressed() {
+        return liftCont.getLeftBumperPressed();
     }
     
     /**Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
