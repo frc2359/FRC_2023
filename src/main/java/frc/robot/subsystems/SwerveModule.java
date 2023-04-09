@@ -6,6 +6,7 @@ import java.lang.Math;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -37,6 +38,8 @@ public class SwerveModule {
     private final CANCoder absoluteEncoder;         // Use CANCoder for absolute position
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
+
+    private boolean isBrakeMode;
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
@@ -129,9 +132,14 @@ public class SwerveModule {
     }
 
     public boolean setDriveMode(boolean isBrakeMode) {
-        System.out.println("asdf");
         driveMotor.setNeutralMode(isBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
+        turningMotor.setIdleMode(isBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
+        this.isBrakeMode = isBrakeMode;
         return isBrakeMode;
+    }
+
+    public IdleMode getDriveMode() {
+        return turningMotor.getIdleMode();
     }
     
     /**Set whether the drive motor is inverted 

@@ -49,24 +49,6 @@ public class SwerveJoystickCmd extends CommandBase {
 
     }
 
-    /**Balance the robot */
-    public void balance() {
-        double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
-        double xAxisRate = Math.sin(pitchAngleRadians) * -1;
-
-
-        // 4. Construct desired chassis speeds
-        ChassisSpeeds chassisSpeeds;
-        chassisSpeeds = new ChassisSpeeds(xAxisRate, 0, 0);
-         
-      
-        // 5. Convert chassis speeds to individual module states
-        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
- 
-        // 6. Output each module states to wheels
-        swerveSubsystem.setModuleStates(moduleStates);
-    }
-
     @Override
     public void execute() {
         // 1. Get real-time joystick inputs

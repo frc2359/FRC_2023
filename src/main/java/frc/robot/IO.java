@@ -7,9 +7,11 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.button.Button;
 
@@ -27,15 +29,11 @@ public class IO {
     /* ------------------------------- CONTORLLER ------------------------------- */
     private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
     private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
-    private static GenericHID buttonBox;
+    private static GenericHID buttonBox = new GenericHID(OIConstants.BOX_PORT);
     
-    public void ini() { 
-        try { 
-            buttonBox = new GenericHID(OIConstants.BOX_PORT);
-        } catch (Exception e) {
-            buttonBox = null;
-        }
-    }
+    private static DigitalInput white = new DigitalInput(SETTING_BUTTON_0);
+    private static DigitalInput yellow = new DigitalInput(SETTING_BUTTON_1);
+    private static DigitalInput red = new DigitalInput(SETTING_BUTTON_2);
     
     /* -------------------------------- LIMELIGHT ------------------------------- */
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -48,9 +46,26 @@ public class IO {
     private static final AHRS navx = new AHRS(SPI.Port.kMXP);
     // private static final ADXRS450_Gyro adx = new ADXRS450_Gyro();
 
+    public static final class SettingConstants {
+        public static final int kWhite = 0;
+        public static final int kYellow = 1;
+        public static final int kRed = 2;
+    }
 
-
-
+    public static boolean getDIO(int port) {
+        if (port == SettingConstants.kRed || port == SettingConstants.kWhite || port == SettingConstants.kYellow) {
+            switch(port) {
+                case SettingConstants.kWhite:
+                    return !white.get();
+                case SettingConstants.kRed:
+                    return !red.get();
+                case SettingConstants.kYellow:
+                    return !yellow.get();
+            }
+        }
+        return false;
+            
+    }
 
     /* -------------------------------------------------------------------------- */
     /*                                    GYRO                                    */
@@ -84,7 +99,7 @@ public class IO {
     }
 
     public static double getRoll() {
-        return navx.getPitch();
+        return navx.getRoll();
     }
 
     public static double getAngle(boolean gyroType) {
@@ -226,6 +241,10 @@ public class IO {
 
     public static boolean isLeftBumpPressed() {
         return liftCont.getLeftBumperPressed();
+    }
+
+    public static void setRumble(int rumb) {
+        liftCont.setRumble(RumbleType.kBothRumble, rumb);
     }
     
     /**Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */

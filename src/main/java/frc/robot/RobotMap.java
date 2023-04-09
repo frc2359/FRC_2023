@@ -46,6 +46,27 @@ public interface RobotMap {
     public static final int BACK_LEFT_ENC = 3;
     public static final int BACK_RIGHT_ENC = 4;
 
+    /* ----------------------------- COMMAND BUTTONS ---------------------------- */
+    public static final int CMD_BUTTON_HOME = 1; //
+    public static final int CMD_BUTTON_DOUBLE = 2; //
+    public static final int CMD_BUTTON_CHUTE = 3; //
+    public static final int CMD_BUTTON_GROUND = 4; //
+    public static final int CMD_BUTTON_INTAKE = 5; //
+    public static final int CMD_BUTTON_STOP = 6; //
+    public static final int CMD_BUTTON_EXP_SL = 7; //
+    public static final int CMD_BUTTON_EXP_FA = 8; //
+    public static final int CMD_BUTTON_LOW = 9;
+    public static final int CMD_BUTTON_CU_HIGH = 10;
+    public static final int CMD_BUTTON_CU_MID = 11; //
+    public static final int CMD_BUTTON_CO_MID = 12;
+
+    /* ----------------------------- SETTING BUTTONS ---------------------------- */
+    public static final int SETTING_BUTTON_0 = 0;
+    public static final int SETTING_BUTTON_1 = 1;
+    public static final int SETTING_BUTTON_2 = 2;
+
+
+
     public static final class LimelightConsants {
         public static final int kPipelineLedSettings = 0;
         public static final int kLedOff = 1;
@@ -161,10 +182,38 @@ public interface RobotMap {
         public static final int MAX_PATH_ACCEL_AUTO = 2;
 
         public static final int kOut = 1;
+        //all after this will run the initial cube stuff
         public static final int kShootAndFarOutSpin = 2;
-        public static final int kShootAndOut = 3;
+        public static final int kTwoCubes = 3;
         public static final int kShootOutBalance = 4;
 
+        public static final String kCubeHigh = "kCubeHigh";
+        public static final String kCubeMid = "kCubeMid";
+
+
+        public static final int UNKNOWN_HOME = 0;
+        public static final int AUTO_STATE_LIFTER_DOWN = 1;
+        public static final int AUTO_STATE_SHOOT_HIGH = 2;
+        public static final int AUTO_STATE_HOME_LIFTER = 3;
+        public static final int AUTO_STATE_MOVE_OUT = 4;
+        public static final int AUTO_STATE_MOVING_OUT = 5;
+        public static final int AUTO_STATE_LIFTER_CUBE = 6;
+        public static final int AUTO_STATE_RETURN_CUBE = 7;
+        public static final int AUTO_STATE_RETURN_ZERO = 8;
+        public static final int AUTO_STATE_RETURN_LIFTER_DOWN = 9;
+        public static final int AUTO_STATE_RETURN_SHOOT = 10;
+        public static final int AUTO_STATE_FINISH = 11;
+
+        public static final int kZero = 1;
+        public static final int kDown = 2;
+        public static final int kMidCube = 3;
+        public static final int kHighCube = 4;
+        public static final int kMidCone = 5;
+        public static final int kHighCone = 6;
+        public static final int kChute = 7;
+        public static final int kSubstation = 8;
+        public static final int kCollectLow = 9;
+        public static final int kLow = 10;
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
                 new TrapezoidProfile.Constraints(
@@ -252,14 +301,14 @@ public interface RobotMap {
         public static final double kMaxAngularSpeedRadiansPerSecond = 1.2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 1.2;
 
-        public static final double kMaxMultiplier = 0.5;
+        public static final double kMaxMultiplier = 0.7;
 
         public static final int LIFT_ID = 10;
         public static final int EXTEND_ID = 11;
         public static final int CLAW_ID = 12;
         public static final int LIFT_LIMIT = 3;
 
-        public static final int LIFTER_MAX_ROTATION = 125;
+        public static final int LIFTER_MAX_ROTATION = 120;
 
         public static final int STATE_LIFT_UNKOWN = -1;
         public static final int STATE_LIFT_STOP = 0;
@@ -279,6 +328,8 @@ public interface RobotMap {
 
         public static final int CLAW_LEFT_MOT_ID = 12;
         public static final int CLAW_RIGHT_MOT_ID = 13;
+
+        public static final int HAS_CONE_ID = 4;
         
 
         /* -------------------------------- OLD CASES ------------------------------- */
@@ -287,7 +338,9 @@ public interface RobotMap {
         // public static final int CASE_CLOSED = 2;
 
         /* ---------------------------------- CASES --------------------------------- */
+        public static final int CASE_CO_WAIT = -1;
         public static final int CASE_STOP = 0;
+        
         public static final int CASE_INTAKE = 1;
         public static final int CASE_POWERED_HOLD = 2;
         public static final int CASE_EXPEL_CUBE_LOW = 3;
@@ -322,7 +375,7 @@ public interface RobotMap {
         public static final double EXTENDER_MAX_DISTANCE = 17.5;   // 18.5 inches
         public static final double EXTENDER_SLOW_DISTANCE = 1.0;     // 2 inches
         public static final double EXTENDER_FAST_SPEED = 1;
-        public static final double EXTENDER_SLOW_SPEED = 0.3;
+        public static final double EXTENDER_SLOW_SPEED = 0.7;
     }
 
 }

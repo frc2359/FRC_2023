@@ -71,6 +71,13 @@ public class Lifter {
         count = 0;
     }
 
+    public void showInfo() {
+        SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
+        SmartDashboard.putNumber("Lifter Case", stateLifter);
+        SmartDashboard.putBoolean("DIO3", !dio.get());
+        SmartDashboard.putNumber("Ext Max Rot Calc", getMaxRotation());
+    }
+
     public void setStateLifter(int stateSetpoint){
         this.stateLifter = stateSetpoint;
     }
@@ -111,13 +118,6 @@ public class Lifter {
         }
     }
 
-    public void zeroPosition() {
-        stateLifter = STATE_LIFT_UNKOWN;
-        run();
-    }
-
-    // function to return lifter and extender to 0
-
     public void run() {
         SmartDashboard.putNumber("Lifter Encoder", (e.getPosition()));
         SmartDashboard.putNumber("Lifter Case", stateLifter);
@@ -126,7 +126,7 @@ public class Lifter {
 
         switch (stateLifter) {
             case STATE_LIFT_UNKOWN:
-                spdLifter = -0.1;
+                spdLifter = -0.09;
                 if (!dio.get()) {
                     stateLifter = STATE_LIFT_ZERO_ENCODERS;
                 }
@@ -138,29 +138,34 @@ public class Lifter {
                 stateLifter = STATE_LIFT_STOP;
             case STATE_LIFT_STOP:
                 spdLifter = 0;
+
+                // spdLifter = 0.1 * (setpoint - e.getPosition());
+
                 break;
             case STATE_LIFT_UP:
                 spdLifter = Math.abs(spdLifter);
                 if(e.getPosition() <= 5 || e.getPosition() >= getMaxRotation()) {
                     stateLifter = STATE_LIFT_STOP;
                 }
+                setpoint = e.getPosition();
                 break;
             case STATE_LIFT_DOWN:
                 spdLifter = -Math.abs(spdLifter);
                 if(e.getPosition() <= 0 || e.getPosition() >= getMaxRotation()) {
                     stateLifter = STATE_LIFT_STOP;
                 }
+                setpoint = e.getPosition();
                 break;
             case STATE_LIFT__MOVE_TO_POS:
                 // spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
-                if (e.getPosition() >= (setpoint + deadband)){
+                if (e.getPosition() >= (setpoint + (1.5 * deadband))){
                     spdLifter = -0.7;
-                } else if (e.getPosition() >= (setpoint + (2 *deadband))){
-                    spdLifter = -0.3;
-                } else if (e.getPosition() <= (setpoint - deadband)){
+                } else if (e.getPosition() >= (setpoint + deadband)){
+                    spdLifter = -0.1;
+                } else if (e.getPosition() <= (setpoint - (1.5 * deadband))){
                     spdLifter = 0.7;
-                } else if (e.getPosition() <= (setpoint - (2 * deadband))){
-                    spdLifter = 0.3;
+                } else if (e.getPosition() <= (setpoint - (deadband))){
+                    spdLifter = 0.1;
                 } else {
                     spdLifter = 0;
                 }
@@ -172,6 +177,10 @@ public class Lifter {
         // Send desired position to controller
     }
 
+    /**Runs the lifter to a specified rotation
+     * @param rot is the rotation setpoint
+     * @param deadband is the acceptable +/- limit
+     */
     public boolean autoRun(double rot, double deadband) { // this.setpoint = rot, this.deadband = deadband
 
         this.setpoint = rot;

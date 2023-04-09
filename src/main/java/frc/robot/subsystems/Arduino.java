@@ -8,18 +8,10 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.SerialPort;
 
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.util.Color;
 
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 
 
 public class Arduino {
-    
-    //private DigitalInput sensorBallRed = new DigitalInput(3);
-    //private DigitalInput sensorBallBlue = new DigitalInput(4);
-
     private SerialPort arduinoUSB;
     private Timer timer; 
 
@@ -27,20 +19,12 @@ public class Arduino {
     private boolean arduinoFound;
 
     //private final I2C.Port i2cPort = I2C.Port.kOnboard;
-    //private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 
     //private final I2C arduinoI2C = new I2C(Port.kMXP,4);
 
-    // private final ColorMatch m_colorMatcher = new ColorMatch();
-    // private final Color kBlueTarget = new Color(0.19, 0.427, 0.38);
-    // private final Color kRedTarget = new Color(0.456, 0.378, 0.166);
-    // private final Color kBlankTarget = new Color(0.273, 0.479, 0.240);
-    
-    // private int ballColor;
-
 
     /** Arduino Init */
-    public void init() {
+    public Arduino() {
 
         // m_colorMatcher.addColorMatch(kBlueTarget);
         // m_colorMatcher.addColorMatch(kRedTarget);
@@ -49,12 +33,14 @@ public class Arduino {
         // Establish Connection to Arduino
         try {
             arduinoUSB = new SerialPort(9600, SerialPort.Port.kUSB);
+            SmartDashboard.putNumber("ard", 0);
             System.out.println("Connected on kUSB!");
             arduinoFound = true;
         } catch (Exception e) {
             System.out.println("Failed to connect on kUSB, trying kUSB1");
             try {
                 arduinoUSB = new SerialPort(9600, SerialPort.Port.kUSB1);
+                SmartDashboard.putNumber("ard", 1);
                 System.out.println("Connected on kUSB1!");
                 arduinoFound = true;
             } catch (Exception e1) {
@@ -62,8 +48,11 @@ public class Arduino {
                 try {
                     arduinoUSB = new SerialPort(9600, SerialPort.Port.kUSB2);
                     System.out.println("Connected on kUSB2!");
+                    SmartDashboard.putNumber("ard", 2);
                     arduinoFound = true;
                 } catch (Exception e2) {
+                    SmartDashboard.putNumber("ard", -1);
+
                     System.out.println("Failed to connect on kUSB2, all attempts failed.");
                     arduinoFound = false;
                 }
@@ -80,14 +69,21 @@ public class Arduino {
         //boolean success = arduinoI2C.transaction(toSend.getBytes(), toSend.getBytes().length, new byte[0], 0);
         return true; //success;
     }
+
+    public String readArd() {
+        if(arduinoFound) {
+            return arduinoUSB.readString();
+        } else {
+            return "Arduino not found. No buffer to read.";
+        }
+    }
      
     public int getBallColor() {     
             
         //Color detectedColor = m_colorSensor.getColor();
 
-        /**
-         * Run the color match algorithm on our detected color
-         */
+        //Run the color match algorithm on our detected color
+        
         String colorString = "Unknown";
         /*
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -129,6 +125,13 @@ public class Arduino {
 
     public boolean isArduinoFound() {
         return arduinoFound;
+    }
+
+    public void write(String s) {
+        if(arduinoFound) {
+            arduinoUSB.writeString(s);
+            arduinoUSB.write(new byte[]{0x0A}, 1);
+        }
     }
 
     /**  LED CONTROL */

@@ -3,14 +3,18 @@ package frc.robot;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,6 +38,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
 
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+    private final SlewRateLimiter xLimiter, yLimiter;
 
 //     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
 
@@ -45,9 +50,12 @@ public class RobotContainer {
                 () -> -IO.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
                 () -> !IO.getTrigger()));
 
+        this.xLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+        this.yLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         //configureButtonBindings();
     }
 
+    /**Returns the current instance of the swerve subsystem */
     public SwerveSubsystem getSwerveSubsystem() {
         return swerveSubsystem;
     }
@@ -126,15 +134,28 @@ public class RobotContainer {
 
     public void balance() {
         double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
-        double xAxisRate = Math.sin(pitchAngleRadians) * -1;
+        // double yAxisRate = Math.sin(pitchAngleRadians);
+        double yAxisRate = 0;
 
         
         double rollAngleRadians = IO.getRoll() * (Math.PI / 180.0);
-        double yAxisRate = Math.sin(rollAngleRadians) * -1;
+        double xAxisRate = Math.sin(rollAngleRadians) * 100;
+
+        // 2. Apply deadband
+        xAxisRate = Math.abs(xAxisRate) > RobotMap.OIConstants.kDriverDeadband ? xAxisRate : 0.0;
+        yAxisRate = Math.abs(yAxisRate) > RobotMap.OIConstants.kDriverDeadband ? yAxisRate : 0.0;
+
+        // 3. Make the driving smoother
+        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+
+        SmartDashboard.putNumber("xRate", xAxisRate);
+        SmartDashboard.putNumber("yRate", yAxisRate);
+
 
         // 4. Construct desired chassis speeds
         ChassisSpeeds chassisSpeeds;
-        chassisSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
+        chassisSpeeds = new ChassisSpeeds(yAxisRate, xAxisRate, 0);
          
       
         // 5. Convert chassis speeds to individual module states

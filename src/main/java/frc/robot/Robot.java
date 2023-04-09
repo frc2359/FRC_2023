@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.IO.GyroType;
 import frc.robot.RobotMap.AutoConstants;
+import static frc.robot.RobotMap.*;
+import static frc.robot.RobotMap.AutoConstants.*;
 import frc.robot.RobotMap.ClawConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.ExtenderConstants;
@@ -16,6 +18,7 @@ import frc.robot.RobotMap.LifterConstants;
 import frc.robot.RobotMap.LimelightConsants;
 import frc.robot.commands.AutoPathCmd;
 import frc.robot.commands.LiftThrowCmd;
+import frc.robot.subsystems.Arduino;
 // import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
@@ -31,7 +34,7 @@ public class Robot extends TimedRobot {
     private Lifter lift;
     private Gripper gripper;
     private Extender extender;
-    // private Arduino arduino;
+    private Arduino arduino = new Arduino();
 
     private LiftThrowCmd lifterCommands;
 
@@ -42,7 +45,13 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
-    int autoMode = 2;
+    int autoMode = kShootAndFarOutSpin;
+    String shootMode = kCubeHigh;
+
+    private final SendableChooser<String> aut_chooser = new SendableChooser<>();
+    private final SendableChooser<String> sho_aut_chooser = new SendableChooser<>();
+
+    private String shootChooser = "";
 
 
 
@@ -56,6 +65,8 @@ public class Robot extends TimedRobot {
 
     boolean contnue = false;
 
+    boolean balancing = false;
+
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
@@ -65,13 +76,28 @@ public class Robot extends TimedRobot {
         gripper = new Gripper();
         lift = new Lifter();
         extender = new Extender();
-        // arduino = new Arduino();
+
+        lifterCommands =  new LiftThrowCmd(lift, gripper, extender);
+
+        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+
 
         lift.init();
         gripper.init();
-        // arduino.init();
         extender.init();
+
+
+        // aut_chooser.setDefaultOption("Shoot/Balance", ""+ kShootOutBalance);
+        // aut_chooser.addOption("Drive Out", "" + kOut);
+        // aut_chooser.addOption("Shoot/Drive/Spin", "" + kShootAndFarOutSpin);
+        // aut_chooser.addOption("Shoot/Drive/Shoot", "" + kTwoCubes);
+        // SmartDashboard.putData("autoMode", aut_chooser);
+
         SmartDashboard.putNumber("autoMode", autoMode);
+
+        sho_aut_chooser.setDefaultOption("Cube High", kCubeHigh);
+        sho_aut_chooser.addOption("Cube Mid", kCubeMid);
+        SmartDashboard.putData("shootMode", sho_aut_chooser);
     }
 
     /**
@@ -90,6 +116,13 @@ public class Robot extends TimedRobot {
         // Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already-scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
+        SmartDashboard.putNumber("Nav Pitch", IO.getPitch());
+        SmartDashboard.putNumber("Nav Yaw", IO.getYaw(GyroType.kNAVX));
+        SmartDashboard.putNumber("Nav Roll", IO.getRoll());
+        // SmartDashboard.putNumber("Nav Pitch", IO.getPitch());
+
+        System.out.println(arduino.readArd());
+
         SmartDashboard.putNumber("Battery Voltage", (pdh.getVoltage()));
         IO.getAprilTagValues();
         SmartDashboard.putBoolean("Battery Good (> 11.5)", (pdh.getVoltage() > 11.5));
@@ -102,6 +135,24 @@ public class Robot extends TimedRobot {
         m_robotContainer.getSwerveSubsystem().setDriveMode(DriveConstants.kCoastMode);
         extender.showData();
         lift.setDriveMode(false);
+        lift.showInfo();
+        SmartDashboard.putBoolean("DIO_W", IO.getDIO(IO.SettingConstants.kWhite));
+        SmartDashboard.putBoolean("DIO_Y", IO.getDIO(IO.SettingConstants.kYellow));
+
+        if(IO.getDIO(IO.SettingConstants.kWhite)) {
+            SmartDashboard.putBoolean("DIO_W", IO.getDIO(IO.SettingConstants.kWhite));
+            IO.zeroHeading();
+        } else if (IO.getDIO(IO.SettingConstants.kYellow)) {
+            m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+        }
+
+        if(IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
+            autoMode = kShootAndFarOutSpin;
+        } else if(IO.getHIDButton(CMD_BUTTON_CU_MID)) {
+            autoMode = kShootOutBalance;
+        }
+
+        SmartDashboard.putNumber("autoMode", autoMode);
     }
 
     /**
@@ -121,20 +172,36 @@ public class Robot extends TimedRobot {
 
         lift.setStateLifter(LifterConstants.STATE_LIFT_UNKOWN);
 
-        m_robotContainer.getSwerveSubsystem().setDriveMode(DriveConstants.kBrakeMode);
+        // m_robotContainer.getSwerveSubsystem().setDriveMode(DriveConstants.kBrakeMode);
+        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
 
         // lifterCommands = new LiftThrowCmd(lift, gripper, extender, 42, 5);
 
-        SmartDashboard.getNumber("autoMode", autoMode);
+        // autoMode = (int) SmartDashboard.getNumber("autoMode", autoMode);
+        shootMode = sho_aut_chooser.getSelected();
 
-        if(SmartDashboard.getNumber("autoMode", autoMode) == AutoConstants.kOut) {
+        SmartDashboard.putNumber("Selected Auto", autoMode);
+
+        SmartDashboard.putBoolean("Loaded Path", false);
+
+        if(autoMode == AutoConstants.kOut) {
+            SmartDashboard.putBoolean("Loaded Path", true);
             m_autonomousCommand = m_robotContainer.runPath("Out", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
-        } else if (SmartDashboard.getNumber("autoMode", autoMode) == AutoConstants.kShootAndFarOutSpin) {
+        }
+        
+        else if (autoMode == AutoConstants.kShootAndFarOutSpin || autoMode == AutoConstants.kTwoCubes) {
+            SmartDashboard.putBoolean("Loaded Path", true);
             m_autonomousCommand = m_robotContainer.runPath("Out Far Spin", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
-        } else if (SmartDashboard.getNumber("autoMode", autoMode) == AutoConstants.kShootAndOut || SmartDashboard.getNumber("autoMode", autoMode) == AutoConstants.kShootOutBalance) {
-            m_autonomousCommand = m_robotContainer.runPath("Out", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
-        } else if (SmartDashboard.getNumber("autoMode", autoMode) == 5) {
+        }
+
+        else if (autoMode == AutoConstants.kShootOutBalance) {
+            SmartDashboard.putBoolean("Loaded Path", true);
+            m_autonomousCommand = m_robotContainer.runPath("Bal", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
+
+        }
+        
+        else if (SmartDashboard.getNumber("autoMode", autoMode) == 5) {
             liftCmdState = 6;
         }
        
@@ -149,60 +216,137 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         SmartDashboard.putNumber("Auto State", liftCmdState);
-        if (autoMode >= AutoConstants.kShootAndFarOutSpin || autoMode <= AutoConstants.kShootOutBalance) {
+        if (autoMode >= AutoConstants.kShootAndFarOutSpin && autoMode <= AutoConstants.kShootOutBalance) {
             switch(liftCmdState) {
-                case 0:
+                case UNKNOWN_HOME:
+                    SmartDashboard.putBoolean("Auto Done?", false);
                     if(lift.currentlyHomed()){
-                        liftCmdState++;
+                        liftCmdState = AUTO_STATE_LIFTER_DOWN;
                     }
                     lift.run();
                     break;
-                case 1:
-                    // contnue = lift.autoRun(68, 5); // 41
-                    contnue = lift.autoRun(41, 5); // 41
-
+                
+                case AUTO_STATE_LIFTER_DOWN:
+                    switch(shootMode) {
+                        case kCubeHigh:
+                            contnue = lift.autoRun(41, 5); // 41
+                            break;
+                        case kCubeMid:
+                            contnue = lift.autoRun(68, 5); // 41
+                            break;
+                    }
                     if (contnue) {
-                        liftCmdState++;
+                        liftCmdState = AUTO_STATE_SHOOT_HIGH;
                         contnue = false;
                     }
                     break;
-                case 2:
+            
+                case AUTO_STATE_SHOOT_HIGH:
                     if (countGripTime < 50) {
                         gripper.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
                         countGripTime++;
                     }
                     if (countGripTime >= 50) {
                         gripper.setState(ClawConstants.CASE_STOP).run();
-                        liftCmdState++;
-                        // countGripTime = 0;
+                        liftCmdState = AUTO_STATE_HOME_LIFTER;
+                        countGripTime = 0;
                     }
                     break;
-                case 3:
-                    // lift.zeroPosition();
-                    liftCmdState++;
+                
+                case AUTO_STATE_HOME_LIFTER:
+                    contnue = lift.autoRun(5, 5);
+
+                    if (contnue) {
+                        liftCmdState = AUTO_STATE_MOVE_OUT;
+                        contnue = false;
+                    }
                     break;
-                case 4:
+                
+
+                case AUTO_STATE_MOVE_OUT:
                     m_autonomousCommand.schedule();
-                    liftCmdState++;
-                case 5:
-                    if (m_autonomousCommand.isFinished() && autoMode == AutoConstants.kShootOutBalance) {
-                        m_autonomousCommand = m_robotContainer.runPath("Out", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
+                    liftCmdState = AUTO_STATE_MOVING_OUT;
+                    break;
+            
+                case AUTO_STATE_MOVING_OUT:
+                    if(m_autonomousCommand.isFinished()){
+                        if(autoMode == kTwoCubes) {
+                            liftCmdState = AUTO_STATE_LIFTER_CUBE;
+                        } else if(autoMode == kShootOutBalance){
+                            m_autonomousCommand.cancel();
+                        }
+                    }
+                    break;
+        
+                case AUTO_STATE_LIFTER_CUBE:
+                    extender.setToDistance(0, 0.2);
+                    lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
+                    gripper.setState(ClawConstants.CASE_INTAKE);
+                    liftCmdState = AUTO_STATE_RETURN_CUBE;
+                    break;
+                
+                case AUTO_STATE_RETURN_CUBE:
+                    contnue = lift.autoRun(0, 3);
+
+                    if(contnue) {
+                        m_autonomousCommand = m_robotContainer.runPath("Path Back", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
                         m_autonomousCommand.schedule();
-                        liftCmdState++;
-                    } else {
-                        System.out.println("done");
+                        contnue = false;
+                        liftCmdState = AUTO_STATE_RETURN_ZERO;
                     }
                     break;
-                case 6:
-                    if(Math.abs(IO.getPitch()) > 0.5) {
-                        m_autonomousCommand.cancel();
-                        m_robotContainer.balance();
+            
+                case AUTO_STATE_RETURN_ZERO:
+                    if(m_autonomousCommand.isFinished()) {
+                        liftCmdState = AUTO_STATE_RETURN_LIFTER_DOWN;
                     }
                     break;
+                
+                case AUTO_STATE_RETURN_LIFTER_DOWN:
+                    contnue = lift.autoRun(68, 5);
+                    if(contnue) {
+                        liftCmdState = AUTO_STATE_RETURN_SHOOT;
+                    }
+                    break;
+
+                case AUTO_STATE_RETURN_SHOOT:
+                    if (countGripTime < 50) {
+                        gripper.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
+                        countGripTime++;
+                    }
+                    if (countGripTime >= 50) {
+                        gripper.setState(ClawConstants.CASE_STOP).run();
+                        liftCmdState = AUTO_STATE_HOME_LIFTER;
+                        countGripTime = 0;
+                    }
+        
+                case AUTO_STATE_FINISH:
+                    SmartDashboard.putBoolean("Auto Done?", true);
+                    break;
+                
+                    
+
+                    
+                // case 6:
+                //     if (m_autonomousCommand.isFinished() && autoMode == AutoConstants.kShootOutBalance) {
+                //         m_autonomousCommand = m_robotContainer.runPath("Out", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
+                //         m_autonomousCommand.schedule();
+                //         liftCmdState++;
+                //     } else {
+                //         SmartDashboard.putBoolean("Auto Done?", true);
+                //     }
+                //     break;
+                // case 7:
+                //     if(Math.abs(IO.getPitch()) > 1) {
+                //         m_autonomousCommand.cancel();
+                //         m_robotContainer.balance();
+                //         liftCmdState++;
+                //     }
+                //     break;
+                // case 8:
+                //     SmartDashboard.putBoolean("Auto Done?", true);
             }
         }
-
-        
     }
 
     @Override
@@ -236,43 +380,66 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         // Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already-scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run();
+        if(!balancing){
+            CommandScheduler.getInstance().run();
+
+        }
 
         lift.manualRun();
         gripper.manualControl();
         extender.runExtender();
-        if(IO.getDriverButton(12)) {
-            extender.setToDistance(10);
-        }
+        // if(IO.getDriverButton(12)) {
+        //     extender.setToDistance(10);
+        // }
 
         if (IO.getDriverButton(3)) { //68
             m_robotContainer.getSwerveSubsystem().setDriveMode(true);
-        } else if (IO.getDriverButton(4)) {
+        }
+        
+        if (IO.getDriverButton(4)) {
             m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         }
 
-        if (IO.isLeftAxisPressed()){
-            extender.setToDistance(0);
-            lift.setToDistance(5, 5);
-        }
+        
+        
+        if (IO.isLeftAxisPressed() || IO.getHIDButton(CMD_BUTTON_HOME)){
+            arduino.write("R");
+            extender.setToDistance(0, 0.2);
+            lift.setToDistance(0, 3);
 
-        if(IO.isRightAxisPressed()) {
-            extender.setToDistance(0);
+        } else if(IO.isRightAxisPressed() || IO.getHIDButton(CMD_BUTTON_GROUND)) {
+            arduino.write("b");
+            extender.setToDistance(0, 0.2);
             lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 5, 5);
-        }
 
-        if (IO.isLeftBumpPressed()) {
-            extender.setToDistance(0);
+        } else if (IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
+            arduino.write("G");
+            extender.setToDistance(5, 0.2, 35);
+            lift.setToDistance(41, 5);
+
+        } else if (IO.isLeftBumpPressed() || IO.getHIDButton(CMD_BUTTON_CU_MID)) {
+            extender.setToDistance(0, 0.2);
             lift.setToDistance(68, 5);
+
+        } else if (IO.getHIDButton(CMD_BUTTON_DOUBLE)) {
+            
+            lift.setToDistance(30, 5);
+            extender.setToDistance(10, 0.5, 35);
+        } else if (IO.getHIDButton(CMD_BUTTON_CHUTE)) {
+            extender.setToDistance(0, 0.2);
+            lift.setToDistance(60, 3);
+
+        } else if (IO.getHIDButton(CMD_BUTTON_LOW)) {
+            extender.setToDistance(0, 0.2);
+            lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
+        } else if (IO.getHIDButton(CMD_BUTTON_CO_MID)) {
+            extender.setToDistance(18, 2, 50);
+            lift.setToDistance(47, 3);
         }
 
         if(IO.getDriverButton(10)) {
             IO.zeroHeading();
         }
-
-        // if (countPressTime == 50 && )
-        
-
     }
 
     @Override

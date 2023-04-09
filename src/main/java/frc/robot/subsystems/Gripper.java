@@ -20,10 +20,11 @@ public class Gripper {
 
     private final ControlMode PO = ControlMode.PercentOutput;
     //dio 9
-    private DigitalInput dio = new DigitalInput(9);
+    private DigitalInput dio = new DigitalInput(HAS_CONE_ID);
 
 
     public int state = 0;
+    public int count = 0;
     private double setpoint = 0;
 
 
@@ -36,20 +37,33 @@ public class Gripper {
         gripMotorRight.setInverted(InvertType.OpposeMaster);
     }
 
-    /**<b>NEEDS INITIALIZATION</b> -- Returns true if an object is in the gripper */
+    /**Returns true + rumble if an cone is in the gripper */
     public boolean lineTripped() {
-        //rumble
+        if(!dio.get()) {
+            IO.setRumble(1);
+        } else {
+            IO.setRumble(0);
+        }
         SmartDashboard.putBoolean("Gripper Line", !dio.get());
         return !dio.get();
     }
 
+    /**Sets the gripper state */
     public Gripper setState(int st) {
         this.state = st;
         return this;
     }
 
+    /** Run the gripper. */
     public void run() {
         switch(state) {
+            case CASE_CO_WAIT:
+                count++;
+                if(count == 50) {
+                    count = 0;
+                    state = CASE_STOP;
+                }
+                break;
             case CASE_STOP:
                 setpoint = 0;
                 break;
@@ -75,42 +89,19 @@ public class Gripper {
         gripMotorRight.set(PO, setpoint);
     }
 
-    /**Manual Control of the gripper.
-     * <ul>
-     * <li><b>A</b>: Intake
-     * <li><b>X</b>: Expel Cube Selector
-     * <ul>
-     * <li><b>Y</b>: High
-     * <li><b>B</b>: Middle
-     * <li><b>A</b>: Low
-     * </ul>
-     * <li><b>Y</b>: Expel Cone
-     * </ul>
-     */
+    /**Manual Control of the gripper. */
     public void manualControl() {
         lineTripped();
-        if (IO.isAPressed()) {  this.state = CASE_INTAKE;  } //intake
+        if (IO.isAPressed() || IO.getHIDButton(CMD_BUTTON_INTAKE)) {  this.state = CASE_INTAKE;  } //intake
         
-        else if(IO.getLiftPOV() == 0) { this.state = CASE_EXPEL_CUBE_HIGH; }
-        else if(IO.getLiftPOV() == 90) { this.state = CASE_EXPEL_CUBE_MID; }
-        else if(IO.getLiftPOV() == 180) { this.state = CASE_EXPEL_CUBE_LOW; }
-        else if (IO.isYPressed()) {  this.state = CASE_EXPEL_CONE;  } //expel cone
-        else if (!IO.isXPressed() && IO.isBPressed()) {  this.state = CASE_STOP;  } // stop motor
+        else if(IO.getLiftPOV() == 0 || IO.getHIDButton(CMD_BUTTON_EXP_FA)) { this.state = CASE_EXPEL_CUBE_HIGH; }
+        else if(IO.getLiftPOV() == 180 || IO.getHIDButton(CMD_BUTTON_EXP_SL)) { this.state = CASE_EXPEL_CUBE_LOW; }
+        else if (IO.isBPressed() || IO.getHIDButton(CMD_BUTTON_STOP)) {  this.state = CASE_STOP;  } // stop motor
 
         if (this.state == CASE_INTAKE && lineTripped()) {
-            this.state = CASE_POWERED_HOLD;
+            this.state = CASE_CO_WAIT;
         }
 
         run();
     }
-
-
-    //expel cube
-
-    //expelMid cube
-
-    //expelHigh cube
-
-    //expel Cone
-
 }

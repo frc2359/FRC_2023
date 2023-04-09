@@ -26,6 +26,8 @@ public class Extender {
     private double spdExtender = 0;
     private double targetDistanceInches = 0;
     private double userControl = 0;
+    private double wait = 0;
+    private int counter = 0;
     private double distance = 0;
     private boolean autoCompleted = false;
 
@@ -165,19 +167,25 @@ public class Extender {
                 break;
             
             case STATE_EXT_MOVE_TO_POS:
-                double pos = getDistanceInches();
-                if (Math.abs(pos - targetDistanceInches) < 0.05 || userControl != 0.0) {
-                    spdExtender = 0.0;
-                    stateExtender = STATE_EXT_STOP;
-                    break;
-                }
-                if (Math.abs(pos - targetDistanceInches) > EXTENDER_SLOW_DISTANCE) {
-                    spdExtender = EXTENDER_FAST_SPEED;
+                counter++;
+                SmartDashboard.putNumber("extcounter", counter);
+                if(counter < wait) {
+                    spdExtender = 0;
                 } else {
-                    spdExtender = EXTENDER_SLOW_SPEED;
-                }
-                if (targetDistanceInches < pos) {
-                    spdExtender *= -1.0;
+                    double pos = getDistanceInches();
+                    if (Math.abs(pos - targetDistanceInches) < 0.05 || userControl != 0.0) {
+                        spdExtender = 0.0;
+                        stateExtender = STATE_EXT_STOP;
+                        break;
+                    }
+                    if (Math.abs(pos - targetDistanceInches) > EXTENDER_SLOW_DISTANCE) {
+                        spdExtender = EXTENDER_FAST_SPEED;
+                    } else {
+                        spdExtender = EXTENDER_SLOW_SPEED;
+                    }
+                    if (targetDistanceInches < pos) {
+                        spdExtender *= -1.0;
+                    }   
                 }
                 break;
             /*
@@ -198,11 +206,25 @@ public class Extender {
     }
 
     /** Move Extender to Pos */
-    public void setToDistance(double dist) {
+    public boolean setToDistance(double dist, double deadband) {
+        this.wait = 0;
+        this.counter = 0;
         if (dist < 0.0) { dist = 0;}
         if (dist > EXTENDER_MAX_DISTANCE) { dist = EXTENDER_MAX_DISTANCE;}
         targetDistanceInches = dist;
         if (stateExtender != STATE_EXT_UNKNOWN) { stateExtender = STATE_EXT_MOVE_TO_POS; }
+        return (getDistanceInches() >= dist - deadband && getDistanceInches() <= dist + deadband);
+    }
+
+    /** Move Extender to Pos */
+    public boolean setToDistance(double dist, double deadband, int wait) {
+        this.wait = wait;
+        this.counter = 0;
+        if (dist < 0.0) { dist = 0;}
+        if (dist > EXTENDER_MAX_DISTANCE) { dist = EXTENDER_MAX_DISTANCE;}
+        targetDistanceInches = dist;
+        if (stateExtender != STATE_EXT_UNKNOWN) { stateExtender = STATE_EXT_MOVE_TO_POS; }
+        return (getDistanceInches() >= dist - deadband && getDistanceInches() <= dist + deadband);
     }
 
     /** Checks if home limit switch enabled */

@@ -10,8 +10,9 @@ import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Lifter;
 import frc.robot.IO;
 import static frc.robot.RobotMap.*;
+import static frc.robot.RobotMap.AutoConstants.*;
 
-public class LiftThrowCmd extends CommandBase {
+public class LiftThrowCmd {
     private Lifter lift;
     private Gripper grip;
     private Extender extend;
@@ -20,6 +21,7 @@ public class LiftThrowCmd extends CommandBase {
     private int extenderDist;
     private int extenderDeadband;
     private int liftCmdState;
+    private int liftThrowCase = 0;
 
     public LiftThrowCmd(Lifter lift, Gripper grip, Extender extend, int liftDist, int liftDeadband) {
         this.lift = lift;
@@ -30,54 +32,48 @@ public class LiftThrowCmd extends CommandBase {
         // lift.setState(LifterConstants.STATE_LIFT_UNKOWN);
     }
 
-    @Override
-    public void execute() {
-        int countGripTime = 0;
-        boolean contnue = false;
-        SmartDashboard.putNumber("AutoLiftState", liftCmdState);
-
-        switch(liftCmdState) {
-            case 0:
-                if(lift.currentlyHomed()){
-                    liftCmdState++;
-                }
-                // lift.run();
-                break;
-            case 1:
-                contnue = lift.autoRun(liftDist, liftDeadband); // 41
-                if (contnue) {
-                    liftCmdState++;
-                    contnue = false;
-                }
-                break;
-            case 2:
-                while (countGripTime < 10) {
-                    grip.setState(ClawConstants.CASE_EXPEL_CUBE_HIGH).run();
-                    countGripTime++;
-                }
-                if (countGripTime >= 10) {
-                    grip.setState(ClawConstants.CASE_STOP).run();
-                    countGripTime++;
-                }
-                break;
-            case 3:
-                lift.zeroPosition();
-                break;
-
-        }
+    public LiftThrowCmd(Lifter lift, Gripper grip, Extender extend) {
+        this.lift = lift;
+        this.grip = grip;
+        this.extend = extend;
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        lift.zeroPosition();
-    }
-
-    @Override
-    public boolean isFinished() {
-        if (lift.isHomed() && liftCmdState == 2) {
-            return false;
-        } else {
-            return true;
+    public void run(int liftThrowCase) {
+        switch(liftThrowCase) {
+            case kZero:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(0, 3);
+                break;
+            case kDown:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(LifterConstants.LIFTER_MAX_ROTATION - 5, 5);
+                break;
+            case kMidCube:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(68, 5);
+                break;
+            case kHighCube:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(41, 5);
+                break;
+            case kCollectLow:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(LifterConstants.LIFTER_MAX_ROTATION - 10, 5);
+                grip.setState(ClawConstants.CASE_INTAKE);
+                break;
+            case kChute:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(60, 5);
+                break;
+            case kSubstation:
+                extend.setToDistance(10, 0.5);
+                lift.autoRun(70, 0.2);
+                break;
+            case kLow:
+                extend.setToDistance(0, 0.2);
+                lift.autoRun(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
+                break;
+            
         }
     }
 

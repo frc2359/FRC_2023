@@ -184,25 +184,4 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }
-
-
-
-
-    /**Balance the robot */
-    // public void balance() {
-    //     double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
-    //     double xAxisRate = Math.sin(pitchAngleRadians) * -1;
-
-
-    //     // 4. Construct desired chassis speeds
-    //     ChassisSpeeds chassisSpeeds;
-    //     chassisSpeeds = new ChassisSpeeds(xAxisRate, ySpeed, turningSpeed);
-         
-      
-    //     // 5. Convert chassis speeds to individual module states
-    //     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
- 
-    //     // 6. Output each module states to wheels
-    //     setModuleStates(moduleStates);
-    // }
 }
