@@ -274,7 +274,7 @@ public class Robot extends TimedRobot {
                 case AUTO_STATE_MOVING_OUT:
                     timeDrivingAuto++;
                     SmartDashboard.getNumber("time dri", timeDrivingAuto);
-                    if(timeDrivingAuto >= 200){
+                    if(timeDrivingAuto >= 170){
                         if(autoMode == kTwoCubes) {
                             m_autonomousCommand.cancel();
                             liftCmdState = AUTO_STATE_LIFTER_CUBE;
@@ -287,16 +287,16 @@ public class Robot extends TimedRobot {
                     break;
         
                 case AUTO_STATE_LIFTER_CUBE:
-
                     extender.setToDistance(0, 0.2);
                     contnue = lift.autoRun(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
-                    gripper.setState(ClawConstants.CASE_INTAKE);
                     if(contnue) {
-                        liftCmdState = AUTO_STATE_RETURN_CUBE;
+                        countGripTime = 0;
+                        contnue = false;
+                        liftCmdState = AUTO_STATE_INTAKE_CUBE;
                     }
                     break;
-                
-                case AUTO_STATE_RETURN_CUBE:
+
+                case AUTO_STATE_INTAKE_CUBE:
                     if (countGripTime >= 50) {
                         gripper.setState(ClawConstants.CASE_STOP);
                         lift.autoRun(0, 3);
@@ -305,6 +305,10 @@ public class Robot extends TimedRobot {
                         gripper.setState(ClawConstants.CASE_INTAKE);
                         countGripTime++;
                     }
+                    break;
+                
+                case AUTO_STATE_RETURN_CUBE:
+                    
                     // contnue = false;
                     // if(contnue) {
                     //     contnue = false;

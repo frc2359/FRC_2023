@@ -198,11 +198,12 @@ public interface RobotMap {
         public static final int AUTO_STATE_MOVE_OUT = 4;
         public static final int AUTO_STATE_MOVING_OUT = 5;
         public static final int AUTO_STATE_LIFTER_CUBE = 6;
-        public static final int AUTO_STATE_RETURN_CUBE = 7;
-        public static final int AUTO_STATE_RETURN_ZERO = 8;
-        public static final int AUTO_STATE_RETURN_LIFTER_DOWN = 9;
-        public static final int AUTO_STATE_RETURN_SHOOT = 10;
-        public static final int AUTO_STATE_FINISH = 11;
+        public static final int AUTO_STATE_INTAKE_CUBE = 7;
+        public static final int AUTO_STATE_RETURN_CUBE = 8;
+        public static final int AUTO_STATE_RETURN_ZERO = 9;
+        public static final int AUTO_STATE_RETURN_LIFTER_DOWN = 10;
+        public static final int AUTO_STATE_RETURN_SHOOT = 11;
+        public static final int AUTO_STATE_FINISH = 12;
 
         public static final int kZero = 1;
         public static final int kDown = 2;
