@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
-    int autoMode = kShootAndFarOutSpin;
+    int autoMode = kTwoCubes;
     String shootMode = kCubeHigh;
 
     private final SendableChooser<String> aut_chooser = new SendableChooser<>();
@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
 
     int num = 0;
     int count = 0;
+    private int timeDrivingAuto = 0;
 
     int countPressTime = 0;
     int countGripTime = 0;
@@ -150,6 +151,8 @@ public class Robot extends TimedRobot {
             autoMode = kShootAndFarOutSpin;
         } else if(IO.getHIDButton(CMD_BUTTON_CU_MID)) {
             autoMode = kShootOutBalance;
+        } else if (IO.getHIDButton(CMD_BUTTON_LOW)) {
+            autoMode = kTwoCubes;
         }
 
         SmartDashboard.putNumber("autoMode", autoMode);
@@ -269,9 +272,14 @@ public class Robot extends TimedRobot {
                     break;
             
                 case AUTO_STATE_MOVING_OUT:
-                    if(m_autonomousCommand.isFinished()){
+                    timeDrivingAuto++;
+                    SmartDashboard.getNumber("time dri", timeDrivingAuto);
+                    if(timeDrivingAuto >= 200){
                         if(autoMode == kTwoCubes) {
+                            m_autonomousCommand.cancel();
                             liftCmdState = AUTO_STATE_LIFTER_CUBE;
+                            timeDrivingAuto = 0;
+
                         } else if(autoMode == kShootOutBalance){
                             m_autonomousCommand.cancel();
                         }
@@ -279,21 +287,29 @@ public class Robot extends TimedRobot {
                     break;
         
                 case AUTO_STATE_LIFTER_CUBE:
+
                     extender.setToDistance(0, 0.2);
-                    lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
+                    contnue = lift.autoRun(LifterConstants.LIFTER_MAX_ROTATION - 10, 3);
                     gripper.setState(ClawConstants.CASE_INTAKE);
-                    liftCmdState = AUTO_STATE_RETURN_CUBE;
+                    if(contnue) {
+                        liftCmdState = AUTO_STATE_RETURN_CUBE;
+                    }
                     break;
                 
                 case AUTO_STATE_RETURN_CUBE:
-                    contnue = lift.autoRun(0, 3);
-
-                    if(contnue) {
-                        m_autonomousCommand = m_robotContainer.runPath("Path Back", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
-                        m_autonomousCommand.schedule();
-                        contnue = false;
-                        liftCmdState = AUTO_STATE_RETURN_ZERO;
+                    if (countGripTime >= 50) {
+                        gripper.setState(ClawConstants.CASE_STOP);
+                        lift.autoRun(0, 3);
+                        countGripTime = 0;
+                    } else {
+                        gripper.setState(ClawConstants.CASE_INTAKE);
+                        countGripTime++;
                     }
+                    // contnue = false;
+                    // if(contnue) {
+                    //     contnue = false;
+                    //     liftCmdState = AUTO_STATE_RETURN_ZERO;
+                    // }
                     break;
             
                 case AUTO_STATE_RETURN_ZERO:
@@ -305,6 +321,7 @@ public class Robot extends TimedRobot {
                 case AUTO_STATE_RETURN_LIFTER_DOWN:
                     contnue = lift.autoRun(68, 5);
                     if(contnue) {
+                        contnue = false;
                         liftCmdState = AUTO_STATE_RETURN_SHOOT;
                     }
                     break;
