@@ -159,13 +159,13 @@ public class Lifter {
             case STATE_LIFT__MOVE_TO_POS:
                 // spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);
                 if (e.getPosition() >= (setpoint + (1.5 * deadband))){
-                    spdLifter = -0.7;
+                    spdLifter = -1;
                 } else if (e.getPosition() >= (setpoint + deadband)){
-                    spdLifter = -0.1;
+                    spdLifter = -0.4;
                 } else if (e.getPosition() <= (setpoint - (1.5 * deadband))){
-                    spdLifter = 0.7;
+                    spdLifter = 1;
                 } else if (e.getPosition() <= (setpoint - (deadband))){
-                    spdLifter = 0.1;
+                    spdLifter = 0.4;
                 } else {
                     spdLifter = 0;
                 }

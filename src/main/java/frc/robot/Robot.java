@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,14 +15,11 @@ import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.ExtenderConstants;
 import frc.robot.RobotMap.LifterConstants;
 import frc.robot.RobotMap.LimelightConsants;
-import frc.robot.commands.AutoPathCmd;
 import frc.robot.commands.LiftThrowCmd;
 import frc.robot.subsystems.Arduino;
-// import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Lifter;
-import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
@@ -53,8 +49,6 @@ public class Robot extends TimedRobot {
 
     private String shootChooser = "";
 
-
-
     int num = 0;
     int count = 0;
 
@@ -81,17 +75,9 @@ public class Robot extends TimedRobot {
 
         m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
-
         lift.init();
         gripper.init();
         extender.init();
-
-
-        // aut_chooser.setDefaultOption("Shoot/Balance", ""+ kShootOutBalance);
-        // aut_chooser.addOption("Drive Out", "" + kOut);
-        // aut_chooser.addOption("Shoot/Drive/Spin", "" + kShootAndFarOutSpin);
-        // aut_chooser.addOption("Shoot/Drive/Shoot", "" + kTwoCubes);
-        // SmartDashboard.putData("autoMode", aut_chooser);
 
         SmartDashboard.putNumber("autoMode", autoMode);
 
@@ -323,28 +309,6 @@ public class Robot extends TimedRobot {
                 case AUTO_STATE_FINISH:
                     SmartDashboard.putBoolean("Auto Done?", true);
                     break;
-                
-                    
-
-                    
-                // case 6:
-                //     if (m_autonomousCommand.isFinished() && autoMode == AutoConstants.kShootOutBalance) {
-                //         m_autonomousCommand = m_robotContainer.runPath("Out", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
-                //         m_autonomousCommand.schedule();
-                //         liftCmdState++;
-                //     } else {
-                //         SmartDashboard.putBoolean("Auto Done?", true);
-                //     }
-                //     break;
-                // case 7:
-                //     if(Math.abs(IO.getPitch()) > 1) {
-                //         m_autonomousCommand.cancel();
-                //         m_robotContainer.balance();
-                //         liftCmdState++;
-                //     }
-                //     break;
-                // case 8:
-                //     SmartDashboard.putBoolean("Auto Done?", true);
             }
         }
     }
@@ -365,15 +329,10 @@ public class Robot extends TimedRobot {
         lift.setStateLifter(LifterConstants.STATE_LIFT_STOP);
         extender.setStateExtender(ExtenderConstants.STATE_EXT_STOP);
 
-        
         countLoop = 0;
         countPressTime = 0;
 
-
         extender.setExtUnknown();
-
-        
-        
     }
 
     /** This function is called periodically during operator control. */
@@ -388,9 +347,6 @@ public class Robot extends TimedRobot {
         lift.manualRun();
         gripper.manualControl();
         extender.runExtender();
-        // if(IO.getDriverButton(12)) {
-        //     extender.setToDistance(10);
-        // }
 
         if (IO.getDriverButton(3)) { //68
             m_robotContainer.getSwerveSubsystem().setDriveMode(true);
@@ -400,8 +356,6 @@ public class Robot extends TimedRobot {
             m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         }
 
-        
-        
         if (IO.isLeftAxisPressed() || IO.getHIDButton(CMD_BUTTON_HOME)){
             arduino.write("R");
             extender.setToDistance(0, 0.2);
