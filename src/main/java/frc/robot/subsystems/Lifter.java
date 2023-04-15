@@ -165,7 +165,7 @@ public class Lifter {
                 } else if (e.getPosition() <= (setpoint - (2 * deadband))){
                     spdLifter = 0.7;
                 } else if (e.getPosition() <= (setpoint - (deadband))){
-                    spdLifter = 0.1;
+                    spdLifter = 0.4;
                 } else {
                     spdLifter = 0;
                 }
