@@ -379,4 +379,10 @@ public interface RobotMap {
         public static final double EXTENDER_SLOW_SPEED = 0.7;
     }
 
+    public static final class LEDConstants {
+        public static final int PWM_LED_LEFT = 0;
+        public static final int PWM_LED_RIGHT = 1;
+
+    }
+
 }

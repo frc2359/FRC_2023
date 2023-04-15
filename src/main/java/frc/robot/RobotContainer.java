@@ -139,15 +139,15 @@ public class RobotContainer {
 
         
         double rollAngleRadians = IO.getRoll() * (Math.PI / 180.0);
-        double xAxisRate = Math.sin(rollAngleRadians) * 100;
+        double xAxisRate = Math.sin(rollAngleRadians);
 
         // 2. Apply deadband
-        xAxisRate = Math.abs(xAxisRate) > RobotMap.OIConstants.kDriverDeadband ? xAxisRate : 0.0;
-        yAxisRate = Math.abs(yAxisRate) > RobotMap.OIConstants.kDriverDeadband ? yAxisRate : 0.0;
+        // xAxisRate = Math.abs(xAxisRate) > RobotMap.OIConstants.kDriverDeadband ? xAxisRate : 0.0;
+        // yAxisRate = Math.abs(yAxisRate) > RobotMap.OIConstants.kDriverDeadband ? yAxisRate : 0.0;
 
         // 3. Make the driving smoother
-        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.7;
+        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.6;
 
         SmartDashboard.putNumber("xRate", xAxisRate);
         SmartDashboard.putNumber("yRate", yAxisRate);
@@ -155,7 +155,7 @@ public class RobotContainer {
 
         // 4. Construct desired chassis speeds
         ChassisSpeeds chassisSpeeds;
-        chassisSpeeds = new ChassisSpeeds(yAxisRate, xAxisRate, 0);
+        chassisSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
          
       
         // 5. Convert chassis speeds to individual module states

@@ -22,9 +22,11 @@ import frc.robot.subsystems.Arduino;
 // import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -34,7 +36,8 @@ public class Robot extends TimedRobot {
     private Lifter lift;
     private Gripper gripper;
     private Extender extender;
-    private Arduino arduino = new Arduino();
+    // private Arduino arduino = new Arduino();
+    private LEDSubsystem leds = new LEDSubsystem();
 
     private LiftThrowCmd lifterCommands;
 
@@ -86,6 +89,9 @@ public class Robot extends TimedRobot {
         lift.init();
         gripper.init();
         extender.init();
+        leds.init();
+
+        leds.setColor(0, 1, 61, 0, 255, 0);
 
 
         // aut_chooser.setDefaultOption("Shoot/Balance", ""+ kShootOutBalance);
@@ -122,7 +128,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Nav Roll", IO.getRoll());
         // SmartDashboard.putNumber("Nav Pitch", IO.getPitch());
 
-        System.out.println(arduino.readArd());
+
+        // System.out.println(arduino.readArd());
 
         SmartDashboard.putNumber("Battery Voltage", (pdh.getVoltage()));
         IO.getAprilTagValues();
@@ -140,13 +147,17 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("DIO_W", IO.getDIO(IO.SettingConstants.kWhite));
         SmartDashboard.putBoolean("DIO_Y", IO.getDIO(IO.SettingConstants.kYellow));
 
+        /* ------------------------------ ROBOT BUTTONS ----------------------------- */
         if(IO.getDIO(IO.SettingConstants.kWhite)) {
+            //status
+        } else if (IO.getDIO(IO.SettingConstants.kRed)) {
+            // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+        } else if (IO.getDIO(IO.SettingConstants.kYellow)) {
             SmartDashboard.putBoolean("DIO_W", IO.getDIO(IO.SettingConstants.kWhite));
             IO.zeroHeading();
-        } else if (IO.getDIO(IO.SettingConstants.kYellow)) {
-            m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         }
 
+        /* ------------------------------ AUTO CHOOSER ------------------------------ */
         if(IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
             autoMode = kShootAndFarOutSpin;
         } else if(IO.getHIDButton(CMD_BUTTON_CU_MID)) {
@@ -154,6 +165,9 @@ public class Robot extends TimedRobot {
         } else if (IO.getHIDButton(CMD_BUTTON_LOW)) {
             autoMode = kTwoCubes;
         }
+
+        leds.setColor(0, 1, 61, 0, 255, 0);
+
 
         SmartDashboard.putNumber("autoMode", autoMode);
     }
@@ -167,6 +181,8 @@ public class Robot extends TimedRobot {
         IO.setLed(LimelightConsants.kPipelineLedSettings);
         lift.init();
         extender.init();
+
+        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
 
         lift.setDriveMode(true);
 
@@ -230,14 +246,15 @@ public class Robot extends TimedRobot {
                     break;
                 
                 case AUTO_STATE_LIFTER_DOWN:
-                    switch(shootMode) {
-                        case kCubeHigh:
-                            contnue = lift.autoRun(41, 5); // 41
-                            break;
-                        case kCubeMid:
-                            contnue = lift.autoRun(68, 5); // 41
-                            break;
-                    }
+                    // switch(shootMode) {
+                    //     case kCubeHigh:
+                    //         contnue = lift.autoRun(41, 5); // 41
+                    //         break;
+                    //     case kCubeMid:
+                    //         contnue = lift.autoRun(68, 5); // 41
+                    //         break;
+                    // }
+                    contnue = lift.autoRun(41, 5); // 41
                     if (contnue) {
                         liftCmdState = AUTO_STATE_SHOOT_HIGH;
                         contnue = false;
@@ -297,13 +314,14 @@ public class Robot extends TimedRobot {
                     break;
 
                 case AUTO_STATE_INTAKE_CUBE:
-                    if (countGripTime >= 50) {
-                        gripper.setState(ClawConstants.CASE_STOP);
-                        lift.autoRun(0, 3);
-                        countGripTime = 0;
-                    } else {
-                        gripper.setState(ClawConstants.CASE_INTAKE);
+                    if (countGripTime < 50) {
+                        gripper.setState(ClawConstants.CASE_INTAKE).run();
                         countGripTime++;
+                    } else {
+                        gripper.setState(ClawConstants.CASE_STOP).run();
+                        lift.setToDistance(0, 10);
+                        liftCmdState = AUTO_STATE_RETURN_CUBE;
+                        countGripTime = 0;
                     }
                     break;
                 
@@ -323,7 +341,7 @@ public class Robot extends TimedRobot {
                     break;
                 
                 case AUTO_STATE_RETURN_LIFTER_DOWN:
-                    contnue = lift.autoRun(68, 5);
+                    contnue = lift.autoRun(41, 5);
                     if(contnue) {
                         contnue = false;
                         liftCmdState = AUTO_STATE_RETURN_SHOOT;
@@ -374,6 +392,9 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         // This makes sure that the autonomous stops running when teleop starts running. If you want the autonomous to continue until interrupted by another command, remove this line or comment it out.
         lift.init();
+
+        leds.initLEDs();
+        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
         
         IO.setLed(LimelightConsants.kPipelineLedSettings);
 
@@ -424,17 +445,17 @@ public class Robot extends TimedRobot {
         
         
         if (IO.isLeftAxisPressed() || IO.getHIDButton(CMD_BUTTON_HOME)){
-            arduino.write("R");
+            // arduino.write("R");
             extender.setToDistance(0, 0.2);
             lift.setToDistance(0, 3);
 
         } else if(IO.isRightAxisPressed() || IO.getHIDButton(CMD_BUTTON_GROUND)) {
-            arduino.write("b");
+            // arduino.write("b");
             extender.setToDistance(0, 0.2);
             lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 5, 5);
 
         } else if (IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
-            arduino.write("G");
+            // arduino.write("G");
             extender.setToDistance(5, 0.2, 35);
             lift.setToDistance(41, 5);
 
@@ -467,10 +488,38 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+
+
+        IO.setLed(LimelightConsants.kPipelineLedSettings);
+        lift.init();
+        extender.init();
+
+        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
+
+        lift.setDriveMode(true);
+
+        countGripTime = 0;
+        liftCmdState = 0;
+
+        // lift.setStateLifter(LifterConstants.STATE_LIFT_UNKOWN);
+
+        // m_robotContainer.getSwerveSubsystem().setDriveMode(DriveConstants.kBrakeMode);
+        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+
+
+        // lifterCommands = new LiftThrowCmd(lift, gripper, extender, 42, 5);
+
+        // autoMode = (int) SmartDashboard.getNumber("autoMode", autoMode);
+        shootMode = sho_aut_chooser.getSelected();
+
+        SmartDashboard.putNumber("Selected Auto", autoMode);
+
+        SmartDashboard.putBoolean("Loaded Path", false);
     }
 
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
+        m_robotContainer.balance();
     }
 }

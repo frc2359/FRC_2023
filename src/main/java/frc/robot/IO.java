@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.NetworkTable;
@@ -8,9 +9,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.button.Button;
@@ -288,6 +291,10 @@ public class IO {
      */
     public static boolean isPOVToAngle(double angle) {
         return driver.getPOV() == angle;
+    }
+
+    public static boolean isTeamRed() {
+        return DriverStation.getAlliance() == DriverStation.Alliance.Red;
     }
 
     private static double deadband(double value, double deadband) {

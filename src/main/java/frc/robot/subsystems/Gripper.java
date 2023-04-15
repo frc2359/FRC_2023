@@ -20,7 +20,8 @@ public class Gripper {
 
     private final ControlMode PO = ControlMode.PercentOutput;
     //dio 9
-    private DigitalInput dio = new DigitalInput(HAS_CONE_ID);
+    private DigitalInput coneDio = new DigitalInput(HAS_CONE_ID);
+    private DigitalInput cubeDio = new DigitalInput(5);
 
 
     public int state = 0;
@@ -38,14 +39,19 @@ public class Gripper {
     }
 
     /**Returns true + rumble if an cone is in the gripper */
-    public boolean lineTripped() {
-        if(!dio.get()) {
+    public boolean hasCone() {
+        if(!coneDio.get()) {
             IO.setRumble(1);
         } else {
             IO.setRumble(0);
         }
-        SmartDashboard.putBoolean("Gripper Line", !dio.get());
-        return !dio.get();
+        SmartDashboard.putBoolean("HasCone?", !coneDio.get());
+        return !coneDio.get();
+    }
+
+    public boolean hasCube() {
+        SmartDashboard.putBoolean("HasCube?", !cubeDio.get());
+        return !cubeDio.get();
     }
 
     /**Sets the gripper state */
@@ -91,14 +97,14 @@ public class Gripper {
 
     /**Manual Control of the gripper. */
     public void manualControl() {
-        lineTripped();
+        hasCone();
         if (IO.isAPressed() || IO.getHIDButton(CMD_BUTTON_INTAKE)) {  this.state = CASE_INTAKE;  } //intake
         
         else if(IO.getLiftPOV() == 0 || IO.getHIDButton(CMD_BUTTON_EXP_FA)) { this.state = CASE_EXPEL_CUBE_HIGH; }
         else if(IO.getLiftPOV() == 180 || IO.getHIDButton(CMD_BUTTON_EXP_SL)) { this.state = CASE_EXPEL_CUBE_LOW; }
         else if (IO.isBPressed() || IO.getHIDButton(CMD_BUTTON_STOP)) {  this.state = CASE_STOP;  } // stop motor
 
-        if (this.state == CASE_INTAKE && lineTripped()) {
+        if (this.state == CASE_INTAKE && hasCone()) {
             this.state = CASE_CO_WAIT;
         }
 
