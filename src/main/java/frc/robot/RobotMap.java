@@ -380,8 +380,15 @@ public interface RobotMap {
     }
 
     public static final class LEDConstants {
-        public static final int PWM_LED_LEFT = 0;
-        public static final int PWM_LED_RIGHT = 1;
+        public static final int PWM_LEDS = 0;
+
+        public static final int STATE_LEDS_OFF = 0;
+        public static final int STATE_LEDS_INIT = 1;
+        public static final int STATE_LEDS_STATUS = 2;
+        public static final int STATE_LEDS_COLOR = 3;
+        public static final int STATE_LEDS_PIECE = 4;
+        public static final int STATE_LEDS_AUTO = 5;
+        public static final int STATE_LEDS_COUNTDOWN = 6;
 
     }
 

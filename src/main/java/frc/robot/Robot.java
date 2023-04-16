@@ -15,12 +15,14 @@ import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.ExtenderConstants;
 import frc.robot.RobotMap.LifterConstants;
 import frc.robot.RobotMap.LimelightConsants;
+import frc.robot.RobotMap.LEDConstants;
 import frc.robot.commands.LiftThrowCmd;
-import frc.robot.subsystems.Arduino;
+//import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Lifter;
+import frc.robot.subsystems.Support;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 
@@ -34,6 +36,7 @@ public class Robot extends TimedRobot {
     private Extender extender;
     // private Arduino arduino = new Arduino();
     private LEDSubsystem leds = new LEDSubsystem();
+    private Support spt = new Support();
 
     private LiftThrowCmd lifterCommands;
 
@@ -84,7 +87,7 @@ public class Robot extends TimedRobot {
         extender.init();
         leds.init();
 
-        leds.setColor(0, 1, 61, 0, 255, 0);
+        leds.setCol(0, 255, 255, false);
 
         SmartDashboard.putNumber("autoMode", autoMode);
 
@@ -121,7 +124,16 @@ public class Robot extends TimedRobot {
         IO.getAprilTagValues();
         SmartDashboard.putBoolean("Battery Good (> 11.5)", (pdh.getVoltage() > 11.5));
         m_robotContainer.getSwerveSubsystem().showData();
+
+        leds.runLEDs();
     }
+
+    @Override
+    public void disabledInit() {
+        leds.setCol(0, 255, 0,  false);
+        //leds.setState(LEDConstants.STATE_LEDS_STATUS);
+    }
+
 
     @Override
     public void disabledPeriodic() {
@@ -135,7 +147,7 @@ public class Robot extends TimedRobot {
 
         /* ------------------------------ ROBOT BUTTONS ----------------------------- */
         if(IO.getDIO(IO.SettingConstants.kWhite)) {
-            //status
+            leds.setState(LEDConstants.STATE_LEDS_STATUS);
         } else if (IO.getDIO(IO.SettingConstants.kRed)) {
             // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         } else if (IO.getDIO(IO.SettingConstants.kYellow)) {
@@ -152,8 +164,7 @@ public class Robot extends TimedRobot {
             autoMode = kTwoCubes;
         }
 
-        leds.setColor(0, 1, 61, 0, 255, 0);
-
+        
 
         SmartDashboard.putNumber("autoMode", autoMode);
     }
@@ -168,7 +179,7 @@ public class Robot extends TimedRobot {
         lift.init();
         extender.init();
 
-        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
+        leds.setCol((IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255), false);
 
         lift.setDriveMode(true);
 
@@ -305,13 +316,20 @@ public class Robot extends TimedRobot {
                         countGripTime++;
                     } else {
                         gripper.setState(ClawConstants.CASE_STOP).run();
-                        lift.setToDistance(0, 10);
-                        liftCmdState = AUTO_STATE_RETURN_CUBE;
-                        countGripTime = 0;
+                        contnue = lift.autoRun(0, 10);
+                        if(contnue) {
+                            liftCmdState = AUTO_STATE_RETURN_CUBE;
+                            m_autonomousCommand = m_robotContainer.runPath("Path Back", AutoConstants.MAX_PATH_SPEED_AUTO, AutoConstants.MAX_PATH_ACCEL_AUTO);
+                            m_autonomousCommand.schedule();
+                            contnue = false;
+                            countGripTime = 0;
+                            break;
+                        }
                     }
                     break;
                 
                 case AUTO_STATE_RETURN_CUBE:
+                    
                     
                     // contnue = false;
                     // if(contnue) {
@@ -358,7 +376,7 @@ public class Robot extends TimedRobot {
         lift.init();
 
         leds.initLEDs();
-        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
+        leds.setCol((IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255), false);
         
         IO.setLed(LimelightConsants.kPipelineLedSettings);
 
@@ -448,7 +466,7 @@ public class Robot extends TimedRobot {
         lift.init();
         extender.init();
 
-        leds.setColor(0, 1, 61, (IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255));
+        leds.setCol((IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255), true);
 
         lift.setDriveMode(true);
 
