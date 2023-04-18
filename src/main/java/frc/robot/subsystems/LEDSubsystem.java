@@ -117,48 +117,48 @@ public class LEDSubsystem extends SubsystemBase {
                 break;
             case STATE_LEDS_STATUS:
 
+                int rdyLvl = 0;
+
                 for (int i=0; i<61; i++) {
                     ledBuffer.setRGB(i, 0, 0, 0);
                 }
                 double batVal = IO.getBattVoltage();
-                setPair(5, 0, 0, 0);
-                setPair(6, 0, 0, 0);
-                
+                 
                 if (batVal > 12.5) {
-                    setPair(5, 0, 255, 0);
-                    setPair(6, 0, 0, 255);
+                    setPair(4, 0, 255, 0);
+                    setPair(5, 0, 0, 255);
                 }
                 if (batVal >= 12.0 && batVal <12.5 ) {
+                    setPair(4, 0, 255, 0);
                     setPair(5, 0, 255, 0);
-                    setPair(6, 0, 255, 0);
                 }
                 if (batVal >= 11.5 && batVal <12.0 ) {
-                    setPair(5, 0, 255, 0);
-                    setPair(6, 255, 255, 0);
+                    setPair(4, 0, 255, 0);
+                    setPair(5, 255, 255, 0);
                 }
                 if (batVal >= 11.0 && batVal <11.5 ) {
+                    setPair(4, 255, 255, 0);
                     setPair(5, 255, 255, 0);
-                    setPair(6, 255, 255, 0);
                 }
                 if (batVal <11.0 ) {
+                    setPair(4, 255, 0, 0);
                     setPair(5, 255, 0, 0);
-                    setPair(6, 255, 0, 0);
                 }
 
                 // Status Info
 
                 if (DriverStation.isEnabled()) {
-                    setPair(3, 0,255, 0);
+                    setPair(7, 0,255, 0);
                     if (DriverStation.isAutonomous()) {
-                        setPair(4, 255, 255, 0);
+                        setPair(8, 255, 255, 0);
                     }
                     if (DriverStation.isTeleop()) {
-                        setPair(4, 0, 255, 0);
+                        setPair(8, 0, 255, 0);
                     }
                     if (DriverStation.isTest()) {
-                        setPair(4, 255, 255, 255);
+                        setPair(8, 255, 255, 255);
                     }
-                    setPair(5, 0,255, 0); 
+                    setPair(9, 0,255, 0); 
                 }
                 if (DriverStation.isDisabled()) {
                     setPair(7, 128,128, 0);
@@ -175,14 +175,14 @@ public class LEDSubsystem extends SubsystemBase {
                 int stn = DriverStation.getLocation();
                 for (int i = 0; i<stn; i++) {
                     if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-                        setPair(10+i,255,0,0);
+                        setPair(11+i,255,0,0);
                     }
                     else {
-                        setPair(10+i,0,0,255);
+                        setPair(11+i,0,0,255);
                     }
                 }
                 for (int i=stn; i<3; i++) {
-                    setPair(11+i, 255, 255, 255);
+                    setPair(11+i, 128, 128, 128);
                 }
                 
                 if (DriverStation.isFMSAttached()) {
@@ -227,6 +227,21 @@ public class LEDSubsystem extends SubsystemBase {
                     setPair(25, 255, 0, 0);
                     setPair(26, 255, 0, 0);
                     setPair(27, 255, 0, 0);
+                }
+                // Show Readiness Level
+                switch (rdyLvl) {
+                    case 0:
+                        setColor(29, 33, 128, 128, 128);
+                        break;
+                    case 1:
+                        setColor(29, 33, 0, 255, 0);
+                        break;
+                    case 2:
+                        setColor(29, 33, 128, 128, 0);
+                        break;
+                    case 3:
+                        setColor(29, 33, 255, 0, 0);
+                        break;
                 }
 
                 break;
