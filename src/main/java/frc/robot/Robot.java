@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
 
     private LiftThrowCmd lifterCommands;
 
-    private PowerDistribution pdh = new PowerDistribution();
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -85,7 +84,7 @@ public class Robot extends TimedRobot {
         lift.init();
         gripper.init();
         extender.init();
-        leds.init();
+        leds.init(gripper, lift, extender);
 
         leds.setCol(0, 255, 255, false);
 
@@ -120,9 +119,9 @@ public class Robot extends TimedRobot {
 
         // System.out.println(arduino.readArd());
 
-        SmartDashboard.putNumber("Battery Voltage", (pdh.getVoltage()));
+        SmartDashboard.putNumber("Battery Voltage", (IO.getBattVoltage()));
         IO.getAprilTagValues();
-        SmartDashboard.putBoolean("Battery Good (> 11.5)", (pdh.getVoltage() > 11.5));
+        SmartDashboard.putBoolean("Battery Good (> 11.5)", (IO.getBattVoltage() > 11.5));
         m_robotContainer.getSwerveSubsystem().showData();
 
         leds.runLEDs();
@@ -296,6 +295,7 @@ public class Robot extends TimedRobot {
 
                         } else if(autoMode == kShootOutBalance){
                             m_autonomousCommand.cancel();
+                            m_robotContainer.balance();
                         }
                     }
                     break;
@@ -404,6 +404,12 @@ public class Robot extends TimedRobot {
 
         }
 
+        if(IO.isRightBumpPressed()) {
+            leds.setPiece(LEDConstants.PIECE_TYPE_CONE);
+        } else if(IO.isLeftBumpPressed()) {
+            leds.setPiece(LEDConstants.PIECE_TYPE_CUBE);
+        }
+
         lift.manualRun();
         gripper.manualControl();
         extender.runExtender();
@@ -428,7 +434,7 @@ public class Robot extends TimedRobot {
 
         } else if (IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
             // arduino.write("G");
-            extender.setToDistance(5, 0.2, 35);
+            extender.setToDistance(0, 0.2, 35);
             lift.setToDistance(41, 5);
 
         } else if (IO.isLeftBumpPressed() || IO.getHIDButton(CMD_BUTTON_CU_MID)) {
@@ -454,6 +460,7 @@ public class Robot extends TimedRobot {
         if(IO.getDriverButton(10)) {
             IO.zeroHeading();
         }
+
     }
 
     @Override

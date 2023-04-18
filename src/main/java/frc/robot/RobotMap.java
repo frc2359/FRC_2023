@@ -166,6 +166,8 @@ public interface RobotMap {
                 kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 7;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
+
+        
     }
 
     public static final class AutoConstants {
@@ -293,6 +295,8 @@ public interface RobotMap {
         // public static final int kDriverRotAxis = 2;
         // public static final int kDriverFieldOrientedButtonIdx = 1;
 
+       
+
     }
 
     public static final class LifterConstants {
@@ -330,7 +334,8 @@ public interface RobotMap {
         public static final int CLAW_LEFT_MOT_ID = 12;
         public static final int CLAW_RIGHT_MOT_ID = 13;
 
-        public static final int HAS_CONE_ID = 4;
+        public static final int DIO_HAS_CONE = 4;
+        public static final int DIO_HAS_CUBE = 5;
         
 
         /* -------------------------------- OLD CASES ------------------------------- */
@@ -339,7 +344,7 @@ public interface RobotMap {
         // public static final int CASE_CLOSED = 2;
 
         /* ---------------------------------- CASES --------------------------------- */
-        public static final int CASE_CO_WAIT = -1;
+        public static final int CASE_WAIT = -1;
         public static final int CASE_STOP = 0;
         
         public static final int CASE_INTAKE = 1;
@@ -348,6 +353,10 @@ public interface RobotMap {
         public static final int CASE_EXPEL_CUBE_MID = 4;
         public static final int CASE_EXPEL_CUBE_HIGH = 5;
         public static final int CASE_EXPEL_CONE = 6;
+
+        public static final int kBoth = 0;
+        public static final int kLeft = 1;
+        public static final int kRight = 2;
 
     }
 
@@ -390,6 +399,9 @@ public interface RobotMap {
         public static final int STATE_LEDS_AUTO = 5;
         public static final int STATE_LEDS_COUNTDOWN = 6;
 
+        public static final int PIECE_TYPE_UNKNOWN = 0;
+        public static final int PIECE_TYPE_CUBE = 1;
+        public static final int PIECE_TYPE_CONE = 2;
     }
 
 }

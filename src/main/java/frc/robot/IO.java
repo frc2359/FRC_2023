@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -33,10 +34,18 @@ public class IO {
     private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
     private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
     private static GenericHID buttonBox = new GenericHID(OIConstants.BOX_PORT);
+
+    private static PowerDistribution pdh = new PowerDistribution();
+
     
     private static DigitalInput white = new DigitalInput(SETTING_BUTTON_0);
     private static DigitalInput yellow = new DigitalInput(SETTING_BUTTON_1);
     private static DigitalInput red = new DigitalInput(SETTING_BUTTON_2);
+    
+    /* ----------------------------- POWER DIST HUB ----------------------------- */
+    public static double getBattVoltage() {
+        return pdh.getVoltage();
+    }
     
     /* -------------------------------- LIMELIGHT ------------------------------- */
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -116,6 +125,10 @@ public class IO {
         // } else {
         //     return (adx.getAngle() % 360) - 180;
         // }
+    }
+
+    public static boolean isNavXAvail() {
+        return navx.isConnected();
     }
 
     public static Rotation2d getRotation2D(boolean gyroType) {
@@ -246,8 +259,18 @@ public class IO {
         return liftCont.getLeftBumperPressed();
     }
 
-    public static void setRumble(int rumb) {
-        liftCont.setRumble(RumbleType.kBothRumble, rumb);
+    public static boolean isRightBumpPressed() {
+        return liftCont.getRightBumperPressed();
+    }
+
+    public static void setRumble(int rumb, int side) {
+        if(side == ClawConstants.kBoth) {
+            liftCont.setRumble(RumbleType.kBothRumble, rumb);
+        } else if(side == ClawConstants.kLeft) {
+            liftCont.setRumble(RumbleType.kLeftRumble, rumb);
+        } else if(side == ClawConstants.kRight) {
+            liftCont.setRumble(RumbleType.kRightRumble, rumb);
+        }
     }
     
     /**Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
@@ -318,4 +341,5 @@ public class IO {
 
         return value;
     }
+
 }

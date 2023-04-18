@@ -20,8 +20,8 @@ public class Gripper {
 
     private final ControlMode PO = ControlMode.PercentOutput;
     //dio 9
-    private DigitalInput coneDio = new DigitalInput(HAS_CONE_ID);
-    private DigitalInput cubeDio = new DigitalInput(5);
+    private DigitalInput coneDio = new DigitalInput(DIO_HAS_CONE);
+    private DigitalInput cubeDio = new DigitalInput(DIO_HAS_CUBE);
 
 
     public int state = 0;
@@ -41,15 +41,20 @@ public class Gripper {
     /**Returns true + rumble if an cone is in the gripper */
     public boolean hasCone() {
         if(!coneDio.get()) {
-            IO.setRumble(1);
+            IO.setRumble(1, kLeft);
         } else {
-            IO.setRumble(0);
+            IO.setRumble(0, kBoth);
         }
         SmartDashboard.putBoolean("HasCone?", !coneDio.get());
         return !coneDio.get();
     }
 
     public boolean hasCube() {
+        if(!coneDio.get()) {
+            IO.setRumble(1, kRight);
+        } else {
+            IO.setRumble(0, kBoth);
+        }
         SmartDashboard.putBoolean("HasCube?", !cubeDio.get());
         return !cubeDio.get();
     }
@@ -63,7 +68,7 @@ public class Gripper {
     /** Run the gripper. */
     public void run() {
         switch(state) {
-            case CASE_CO_WAIT:
+            case CASE_WAIT:
                 count++;
                 if(count == 50) {
                     count = 0;
@@ -105,7 +110,7 @@ public class Gripper {
         else if (IO.isBPressed() || IO.getHIDButton(CMD_BUTTON_STOP)) {  this.state = CASE_STOP;  } // stop motor
 
         if (this.state == CASE_INTAKE && hasCone()) {
-            this.state = CASE_CO_WAIT;
+            this.state = CASE_WAIT;
         }
 
         run();
