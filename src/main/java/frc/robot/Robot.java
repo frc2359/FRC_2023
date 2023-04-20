@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +47,7 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
-    int autoMode = kTwoCubes;
+    int autoMode = 2; //kTwoCubes;
     String shootMode = kCubeHigh;
 
     private final SendableChooser<String> aut_chooser = new SendableChooser<>();
@@ -250,7 +251,7 @@ public class Robot extends TimedRobot {
                     //         contnue = lift.autoRun(68, 5); // 41
                     //         break;
                     // }
-                    contnue = lift.autoRun(41, 5); // 41
+                    contnue = lift.autoRun(37, 4); // 41
                     if (contnue) {
                         liftCmdState = AUTO_STATE_SHOOT_HIGH;
                         contnue = false;
@@ -423,17 +424,14 @@ public class Robot extends TimedRobot {
         }
 
         if (IO.isLeftAxisPressed() || IO.getHIDButton(CMD_BUTTON_HOME)){
-            // arduino.write("R");
             extender.setToDistance(0, 0.2);
             lift.setToDistance(0, 3);
 
         } else if(IO.isRightAxisPressed() || IO.getHIDButton(CMD_BUTTON_GROUND)) {
-            // arduino.write("b");
             extender.setToDistance(0, 0.2);
             lift.setToDistance(LifterConstants.LIFTER_MAX_ROTATION - 5, 5);
 
         } else if (IO.getHIDButton(CMD_BUTTON_CU_HIGH)) {
-            // arduino.write("G");
             extender.setToDistance(0, 0.2, 35);
             lift.setToDistance(41, 5);
 
@@ -457,8 +455,18 @@ public class Robot extends TimedRobot {
             lift.setToDistance(47, 3);
         }
 
+        if (IO.isBPressed() || IO.getHIDButton(CMD_BUTTON_STOP)) {
+            leds.setCol((IO.isTeamRed() ? 255 : 0), 0, (IO.isTeamRed() ? 0 : 255), false);
+        }
+
+
         if(IO.getDriverButton(10)) {
             IO.zeroHeading();
+        }
+
+        SmartDashboard.putNumber("MatchTime",DriverStation.getMatchTime());
+        if(DriverStation.isTeleop() && DriverStation.getMatchTime() >=0 && DriverStation.getMatchTime() < 31) {
+            leds.endGame(DriverStation.getMatchTime());
         }
 
     }

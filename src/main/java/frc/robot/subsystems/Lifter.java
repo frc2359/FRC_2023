@@ -20,6 +20,8 @@ import frc.robot.IO;
 import static frc.robot.RobotMap.*;
 import static frc.robot.RobotMap.LifterConstants.*;
 
+import javax.lang.model.util.ElementScanner14;
+
 public class Lifter {
 
     // Create SPARK MAX object
@@ -134,6 +136,7 @@ public class Lifter {
             case STATE_LIFT_ZERO_ENCODERS:
                 this.homed = true;
                 e.setPosition(0);
+                setpoint = 0;
                 spdLifter = 0;
                 stateLifter = STATE_LIFT_STOP;
             case STATE_LIFT_STOP:
@@ -144,17 +147,34 @@ public class Lifter {
                 break;
             case STATE_LIFT_UP:
                 spdLifter = Math.abs(spdLifter);
-                if(e.getPosition() <= 5 || e.getPosition() >= getMaxRotation()) {
-                    stateLifter = STATE_LIFT_STOP;
+                if (e.getPosition() <= 5 ) {
+                    spdLifter = .4;
                 }
+                /*
+                if (!dio.get()) {
+                    stateLifter = STATE_LIFT_ZERO_ENCODERS;
+                    spdLifter = 0;
+                }
+                */
+                if (e.getPosition() <=0 ){
+                    stateLifter = STATE_LIFT_STOP;
+                    spdLifter = 0;
+                }
+                //if(e.getPosition() >= getMaxRotation()) {
+                //    stateLifter = STATE_LIFT_STOP;
+                //}
                 setpoint = e.getPosition();
                 break;
             case STATE_LIFT_DOWN:
                 spdLifter = -Math.abs(spdLifter);
-                if(e.getPosition() <= 0 || e.getPosition() >= getMaxRotation()) {
+                //if(e.getPosition() <= 0 || e.getPosition() >= getMaxRotation()) {
+                if(e.getPosition() >= getMaxRotation()) {
                     stateLifter = STATE_LIFT_STOP;
+                    spdLifter = 0;
+                    setpoint = getMaxRotation();
+                } else {
+                    setpoint = e.getPosition();
                 }
-                setpoint = e.getPosition();
                 break;
             case STATE_LIFT__MOVE_TO_POS:
                 // spark.getPIDController().setReference(this.setpoint, ControlType.kPosition);

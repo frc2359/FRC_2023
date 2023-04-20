@@ -29,6 +29,7 @@ public class LEDSubsystem extends SubsystemBase {
    
     private long startTime = 0;
     private long elapsedTime = 0;
+    private double timeLeft = 120;
 
     private static Gripper myGripper;
     private static Lifter myLifter;
@@ -84,6 +85,11 @@ public class LEDSubsystem extends SubsystemBase {
         runLEDs();
     }
 
+    public void endGame(double tL) {
+        timeLeft = tL;
+        stateLEDs = STATE_LEDS_COUNTDOWN;
+    }
+
     public void setState (int st) {
         stateLEDs = st;
     }
@@ -93,12 +99,13 @@ public class LEDSubsystem extends SubsystemBase {
         setState(STATE_LEDS_PIECE);
     }
 
-
     public void setPair(int iP, int cR, int cG, int cB) {
-        setColor(iP, iP, cR, cG, cB);
-        setColor(62-iP, 62-iP, cR, cG, cB);
-        //ledBuffer.setRGB(iP-1, cR, cG, cB);
-        //ledBuffer.setRGB(61-iP, cR, cG, cB);
+        if (iP>=1 && iP<=31) {
+            setColor(iP, iP, cR, cG, cB);
+            setColor(62-iP, 62-iP, cR, cG, cB);
+            //ledBuffer.setRGB(iP-1, cR, cG, cB);
+            //ledBuffer.setRGB(61-iP, cR, cG, cB);
+        }
     }
 
     public void runLEDs() {
@@ -127,22 +134,27 @@ public class LEDSubsystem extends SubsystemBase {
                 if (batVal > 12.5) {
                     setPair(4, 0, 255, 0);
                     setPair(5, 0, 0, 255);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 }
                 if (batVal >= 12.0 && batVal <12.5 ) {
                     setPair(4, 0, 255, 0);
                     setPair(5, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 }
                 if (batVal >= 11.5 && batVal <12.0 ) {
                     setPair(4, 0, 255, 0);
                     setPair(5, 255, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
                 if (batVal >= 11.0 && batVal <11.5 ) {
                     setPair(4, 255, 255, 0);
                     setPair(5, 255, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
                 if (batVal <11.0 ) {
                     setPair(4, 255, 0, 0);
                     setPair(5, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 3);
                 }
 
                 // Status Info
@@ -169,6 +181,7 @@ public class LEDSubsystem extends SubsystemBase {
                     setPair(7, 255,0, 0);
                     setPair(8, 255,0, 0);
                     setPair(9, 255,0, 0); 
+                    rdyLvl = Math.max(rdyLvl, 3);
                 }
 
                 // Alliance Info
@@ -193,40 +206,51 @@ public class LEDSubsystem extends SubsystemBase {
 
                 if (DriverStation.isDSAttached()) {
                     setPair(17, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else {
                     setPair(17, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
 
                 if (IO.isNavXAvail()) {
                     setPair(19, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else {
                     setPair(19, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 3);
                 }
 
                 if (myLifter.currentlyHomed()) {
                     setPair(21, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else {
                     setPair(21, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
 
                 if (myExtender.isHome()) {
                     setPair(23, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else {
                     setPair(23, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
 
                 if (myGripper.hasCube()) {
                     setPair(25, 0, 255, 0);
                     setPair(26, 255, 0, 255);
                     setPair(27, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else if (myGripper.hasCone()) {
                     setPair(25, 0, 255, 0);
                     setPair(26, 255, 128, 0);
                     setPair(27, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
                 } else {
                     setPair(25, 255, 0, 0);
                     setPair(26, 255, 0, 0);
                     setPair(27, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
                 }
                 // Show Readiness Level
                 switch (rdyLvl) {
@@ -278,6 +302,20 @@ public class LEDSubsystem extends SubsystemBase {
                 break;
                 
             case STATE_LEDS_COUNTDOWN:
+                setPair(31, 255, 255, 255);
+                for (int i=30; i>0; i--) {
+                    if (i>timeLeft) {
+                        setPair(31-i, 0, 0, 0);
+                    } else {
+                        if (i>20) {
+                            setPair(31-i, 0, 255, 0);
+                        } else if(i>10) {
+                            setPair(31-i, 128, 128, 0);
+                        } else {
+                            setPair(31-i, 255, 0, 0);
+                        }
+                    }
+                }
                 break;        
         }
        leds.setData(ledBuffer);

@@ -146,8 +146,8 @@ public class RobotContainer {
         // yAxisRate = Math.abs(yAxisRate) > RobotMap.OIConstants.kDriverDeadband ? yAxisRate : 0.0;
 
         // 3. Make the driving smoother
-        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.7;
-        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.6;
+        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.9;
+        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.8;
 
         SmartDashboard.putNumber("xRate", xAxisRate);
         SmartDashboard.putNumber("yRate", yAxisRate);

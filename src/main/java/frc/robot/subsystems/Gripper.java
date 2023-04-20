@@ -40,23 +40,40 @@ public class Gripper {
 
     /**Returns true + rumble if an cone is in the gripper */
     public boolean hasCone() {
-        if(!coneDio.get()) {
-            IO.setRumble(1, kLeft);
+       /*
+       if(!coneDio.get()) {
+            IO.setRumble(1, kRight);
         } else {
             IO.setRumble(0, kBoth);
         }
+        */
         SmartDashboard.putBoolean("HasCone?", !coneDio.get());
         return !coneDio.get();
     }
 
     public boolean hasCube() {
-        if(!coneDio.get()) {
-            IO.setRumble(1, kRight);
+        /* 
+        if(!cubeDio.get()) {
+            IO.setRumble(1, kLeft);
         } else {
             IO.setRumble(0, kBoth);
         }
+        */
         SmartDashboard.putBoolean("HasCube?", !cubeDio.get());
         return !cubeDio.get();
+    }
+
+    public void pieceRumble() {
+        if (hasCube() || hasCone()) {
+            if (hasCube()) {
+                IO.setRumble(1, kLeft);
+            }
+            if(hasCone()) {
+                IO.setRumble(1, kRight);
+            }
+        } else {
+            IO.setRumble(0, kBoth);
+        }
     }
 
     /**Sets the gripper state */
@@ -102,7 +119,7 @@ public class Gripper {
 
     /**Manual Control of the gripper. */
     public void manualControl() {
-        hasCone();
+        pieceRumble();
         if (IO.isAPressed() || IO.getHIDButton(CMD_BUTTON_INTAKE)) {  this.state = CASE_INTAKE;  } //intake
         
         else if(IO.getLiftPOV() == 0 || IO.getHIDButton(CMD_BUTTON_EXP_FA)) { this.state = CASE_EXPEL_CUBE_HIGH; }
